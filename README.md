@@ -1,5 +1,9 @@
 # Shattered Pixel Dungeon for NextUI
 
+**中文玩家从这里开始：[中文安装与上手教程](docs/INSTALL-ZH.md)** — 下载哪个文件、放到 SD 卡哪里、如何启动和更新，按步骤照做即可。
+
+**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v3.3.8-nextui.1/Shattered-Pixel-Dungeon-v3.3.8-nextui.1-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
+
 Unofficial, open-source RG34XX adaptation of Shattered Pixel Dungeon **3.3.8**. Designed for the ordinary RG34XX: H700, 720×480, 1 GB RAM, D-pad and buttons, no analog sticks. 简体中文默认开启。
 
 Based on [Shattered Pixel Dungeon](https://github.com/00-Evan/shattered-pixel-dungeon) by Evan Debenham, [Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle) by Watabou, and [avvstrk's controller fork](https://github.com/avvstrk/shattered-pixel-dungeon-dpad) at `914561b0b8b98493bd77431f9578ab58fae67029`. This community port is not an official Shattered Pixel release. Please support the original developers.
