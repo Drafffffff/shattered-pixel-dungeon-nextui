@@ -18,7 +18,10 @@ with zipfile.ZipFile(binary,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     z.write(root/'ports/shattered-rg34xx/launch.sh','Roms/Ports (PORTS)/Shattered Pixel Dungeon.sh')
     target='Roms/Ports (PORTS)/.ports/shattered-rg34xx/'
     for p in sorted(dist.rglob('*')):
-        if p.is_file(): z.write(p,target+str(p.relative_to(dist)))
+        relative=p.relative_to(dist)
+        # These are regenerated below; dist may contain a previous release staging copy.
+        if p.is_file() and relative.parts[0] not in ('BUILD-INFO.json','THIRD_PARTY_NOTICES.md','licenses'):
+            z.write(p,target+str(relative))
     z.write(root/'README.md','INSTALL.md')
     z.write(root/'THIRD_PARTY_NOTICES.md',target+'THIRD_PARTY_NOTICES.md')
     for p in (root/'licenses').rglob('*'):
