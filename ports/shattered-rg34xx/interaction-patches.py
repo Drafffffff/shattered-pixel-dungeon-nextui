@@ -54,6 +54,21 @@ def apply(root):
         int i=cells.indexOf(dpadTarget);dpadTarget=cells.get(i<0?0:(i+direction+cells.size())%cells.size());
         updateDpadTarget();
     }''',1))
+ patch('scenes/CellSelector.java','nextui-target-camera',lambda s:s.replace('private int dpadTarget = -1;','''private int dpadTarget = -1;
+    // nextui-target-camera: keep the reticle inside the unobstructed play area.
+    private boolean rgTargetCamera;
+    public void rgEndTargetCamera(){
+        if(!rgTargetCamera)return;
+        rgTargetCamera=false;
+        if(Dungeon.hero!=null && Dungeon.hero.sprite!=null)camera.panFollow(Dungeon.hero.sprite,5f);
+    }
+    private void rgFollowTarget(PointF world){
+        float dx=world.x-Math.max(camera.scroll.x+camera.width*.2f,Math.min(camera.scroll.x+camera.width*.8f,world.x));
+        float dy=world.y-Math.max(camera.scroll.y+camera.height*.25f,Math.min(camera.scroll.y+camera.height*.7f,world.y));
+        camera.snapTo(camera.scroll.x+camera.width/2f+dx-camera.centerOffset.x,
+                      camera.scroll.y+camera.height/2f+dy-camera.centerOffset.y);
+    }''',1).replace('public void beginDpadTarget() {','public void beginDpadTarget() {\n        rgTargetCamera=true;',1).replace('PointF world = DungeonTilemap.tileCenterToWorld(dpadTarget);','PointF world = DungeonTilemap.tileCenterToWorld(dpadTarget);\n        if(rgTargetCamera)rgFollowTarget(world);',1).replace('public void update() {\n\t\tsuper.update();','public void update() {\n\t\tsuper.update();\n        if(Boolean.getBoolean("nextui.sdl") && rgTargetCamera && GameScene.selectingCell() && !GameScene.showingWindow())updateDpadTarget();',1))
+ patch('scenes/GameScene.java','nextui-end-target-camera',lambda s:s.replace('cellSelector.listener = listener;','// nextui-end-target-camera\n        if(Boolean.getBoolean("nextui.sdl") && listener==defaultCellListener)cellSelector.rgEndTargetCamera();\n        cellSelector.listener = listener;',1))
  patch('scenes/GameScene.java','nextui-context-actions',lambda s:s.replace('public static boolean selectingCell() {','''// nextui-context-actions: reach every turn action without mouse-only indicators.
     public static void rgConfirmTarget(){if(cellSelector!=null)cellSelector.rgConfirm();}
     public static void rgCycleTarget(int direction){if(cellSelector!=null)cellSelector.rgCycle(direction);}

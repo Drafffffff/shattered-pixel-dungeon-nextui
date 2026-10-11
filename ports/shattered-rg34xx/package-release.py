@@ -4,7 +4,7 @@
 from pathlib import Path
 import concurrent.futures, hashlib, json, subprocess, sys, tarfile, urllib.request, zipfile
 root=Path(__file__).resolve().parents[2]
-version=sys.argv[1] if len(sys.argv)>1 else 'v4.0.2-nextui.2'
+version=sys.argv[1] if len(sys.argv)>1 else 'v4.0.2-nextui.3'
 if not version or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_' for c in version):
     raise SystemExit('Invalid version')
 build=root/'build/shattered-rg34xx';dist=build/'dist';out=build/'release'/version

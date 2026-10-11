@@ -91,6 +91,19 @@ try:
  # Both confirmation buttons inspect; browsing does not advance a turn.
  send('key 97');send('key 100');detail=state('y-examine');assert detail['windowCount']>0 and not detail['cursor'],detail
  shot('examine-border');send('key 97');assert state('inspect-return')['turn']==before['turn']
+ # Target navigation pans the camera while preserving world/turn/fog state.
+ origin=state('target-camera-before');send('key 97');start=state('target-camera-start')
+ send('key 1022');near=state('target-camera-near');assert near['cameraX']==start['cameraX'] and near['cameraY']==start['cameraY'],(start,near)
+ for name,key in [('right',1022),('down',1020),('left',1021),('up',1019)]:
+  for _ in range(20):send(f'key {key}',.04)
+  target=state('target-camera-'+name)
+  assert target['targeting'] and target['pos']==origin['pos'] and target['turn']==origin['turn'] and target['exploredTiles']==origin['exploredTiles'],(origin,target)
+  assert 720*.19<=target['pointerX']<=720*.81 and 480*.24<=target['pointerY']<=480*.71,target
+ assert target['cameraX']!=start['cameraX'] or target['cameraY']!=start['cameraY'],(start,target)
+ shot('target-camera-edge');send('key 105');zoomed=state('target-camera-zoom');assert 0<zoomed['pointerX']<720 and 0<zoomed['pointerY']<480,zoomed;send('key 104')
+ send('key 97',1);returned=state('target-camera-return');assert not returned['targeting'] and returned['heroCameraFollow'] and returned['turn']==origin['turn'],returned
+ # Shoulder target cycling also uses the same camera and cancellation path.
+ send('key 97');send('key 103');send('key 102');assert state('target-camera-cycle')['targeting'];send('key 97')
  # Long B searches exactly once; it must never enter examine targeting.
  origin=state('search-before');send('down 97',.8);searched=state('search-while-held')
  assert searched['turn']>origin['turn'] and not searched['targeting'],(origin,searched)

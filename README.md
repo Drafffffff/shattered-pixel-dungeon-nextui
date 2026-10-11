@@ -2,7 +2,7 @@
 
 **中文玩家从这里开始：[中文安装与上手教程](docs/INSTALL-ZH.md)** — 下载哪个文件、放到 SD 卡哪里、如何启动和更新，按步骤照做即可。
 
-**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.2/Shattered-Pixel-Dungeon-v4.0.2-nextui.2-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
+**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.3/Shattered-Pixel-Dungeon-v4.0.2-nextui.3-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
 
 Unofficial, open-source RG34XX adaptation of Shattered Pixel Dungeon **4.0.2**. Designed for the ordinary RG34XX: H700, 720×480, 1 GB RAM, D-pad and buttons, no analog sticks. 简体中文默认开启。
 
@@ -52,6 +52,8 @@ Save and exit, back up `.userdata/shared/shattered-rg34xx/`, and install the new
 
 **B gestures apply only during exploration.** In a window, target selection, or map, B cancels immediately; holding it does not search. Search is distinct from inspecting yourself, which shows hero information.
 
+During inspect and item targeting, moving the reticle toward the play area edges pans the camera to keep it visible. Cancelling or confirming restores the camera to the hero; zoom and shoulder target cycling share this behavior. Target browsing does not spend turns or reveal fog.
+
 Full map opens at floor overview, hides HUD and highlights the hero in cyan. It retains fog of war and consumes no turns. Closing it restores the prior camera. Six quickslots support replacement and clearing; selected slot, including an empty slot, survives stairs and save/reload. Journal opens directly and remembers tabs, selection and scroll. Windows use border focus and move focus into new dialogs. Transition scenes hide the pointer.
 
 Home retains the original background and three compact entries. Saves can be deleted with a confirmation defaulting to cancel. Tutorial reminders appear once per page; game progression and unread pages retain upstream rules. Strength increases through strength potions, not ordinary character levels. Equipment descriptions clarify known strength requirements without identifying hidden stats.
@@ -76,7 +78,7 @@ For SSH installation after building, with the game saved and exited:
 
 Installer stages a new program directory, keeps the previous version at `.ports/shattered-rg34xx.previous`, preserves saves and artwork, and removes the obsolete duplicate launcher. It never stops NextUI. Do not send signals to `nextui.elf`: on this device that can shut the machine down.
 
-For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.2` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
+For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.3` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
 
 ## Rendering, memory and verification
 

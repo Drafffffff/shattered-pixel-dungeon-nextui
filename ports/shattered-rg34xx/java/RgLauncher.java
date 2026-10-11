@@ -198,6 +198,12 @@ public final class RgLauncher {
   state.put("heap",Dungeon.hero!=null && Dungeon.level!=null && Dungeon.level.heaps.get(Dungeon.hero.pos)!=null);
   state.put("pos",Dungeon.hero==null?-1:Dungeon.hero.pos);state.put("gold",Dungeon.gold);
   state.put("targetCell",com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene.rgTarget());
+  if(Game.scene() instanceof com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene && Dungeon.hero!=null){
+   com.watabou.utils.PointF pointer=ControllerHandler.getControllerPointerPos();
+   state.put("pointerX",pointer.x);state.put("pointerY",pointer.y);
+   state.put("heroCameraFollow",com.watabou.noosa.Camera.main.followTarget()==Dungeon.hero.sprite);
+   state.put("exploredTiles",java.util.stream.IntStream.range(0,Dungeon.level.length()).filter(i->Dungeon.level.visited[i] || Dungeon.level.mapped[i]).count());
+  }
   state.put("journalTab",com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal.last_index);
   state.put("heroTab",com.shatteredpixel.shatteredpixeldungeon.windows.WndHero.lastIdx);
   state.put("cameraX",com.watabou.noosa.Camera.main.scroll.x);state.put("cameraY",com.watabou.noosa.Camera.main.scroll.y);
