@@ -37,7 +37,7 @@ Save and exit, back up `.userdata/shared/shattered-rg34xx/`, and install the new
 | L2 / R2 | Zoom out/in. |
 | Start | Pause menu: settings, journal/catalog, search, map, rest, controls, save/exit. |
 | Select (short) | Hero, talents and active effects; D-pad/A opens each effect description. |
-| Select (hold) | Fullscreen map of the known floor: D-pad pans, L2/R2 zoom, A centers hero, B exits. |
+| Select (hold) | Fullscreen map of the known floor: D-pad moves a white map cursor; A zooms into that area; L2/R2 zoom; B returns to overview, then exits. |
 | Menu (release) | Wait one turn. |
 | Select + Start | Save and exit normally. |
 | Volume | System volume with numeric overlay (0–20). |
@@ -50,7 +50,7 @@ Save and exit, back up `.userdata/shared/shattered-rg34xx/`, and install the new
 
 During inspect and item targeting, moving the reticle toward the play area edges pans the camera to keep it visible. Cancelling or confirming restores the camera to the hero; zoom and shoulder target cycling share this behavior. Target browsing does not spend turns or reveal fog.
 
-Full map opens at floor overview, hides HUD and highlights the hero in cyan. It retains fog of war and consumes no turns. Closing it restores the prior camera. Six quickslots support replacement and clearing; selected slot, including an empty slot, survives stairs and save/reload. Journal opens directly and remembers tabs, selection and scroll. Windows use border focus and move focus into new dialogs. Transition scenes hide the pointer.
+Full map opens at floor overview, hides HUD and highlights the hero in cyan. An independent white crosshair selects a region with D-pad movement (hold to repeat); A zooms into that region. B returns from detail to overview while retaining the cursor, then B again exits. It retains fog of war and consumes no turns. Closing it restores the prior camera. Six quickslots support replacement and clearing; selected slot, including an empty slot, survives stairs and save/reload. Journal opens directly and remembers tabs, selection and scroll. Windows use border focus and move focus into new dialogs. Transition scenes hide the pointer.
 
 Home retains the original background and three compact entries. Saves can be deleted with a confirmation defaulting to cancel. Tutorial reminders appear once per page; game progression and unread pages retain upstream rules. Strength increases through strength potions, not ordinary character levels. Equipment descriptions clarify known strength requirements without identifying hidden stats.
 
@@ -74,7 +74,7 @@ For SSH installation after building, with the game saved and exited:
 
 Installer stages a new program directory, keeps the previous version at `.ports/shattered-rg34xx.previous`, preserves saves and artwork, and removes the obsolete duplicate launcher. It never stops NextUI. Do not send signals to `nextui.elf`: on this device that can shut the machine down.
 
-For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.3` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
+For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.4` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
 
 ## Rendering, memory and verification
 

@@ -121,10 +121,22 @@ try:
  time.sleep(.7);assert state('map-still-held')['mapMode']
  send('up 109');assert state('map-after-release')['mapMode']
  assert m['cameraX']<=0 and m['cameraY']<=0 and m['cameraX']+m['cameraWorldWidth']>=m['mapWidth'] and m['cameraY']+m['cameraWorldHeight']>=m['mapHeight'],m;shot('map-overview')
- send('key 1022');pan=state('map-pan');assert pan['cameraX']!=m['cameraX'] and pan['pos']==before['pos'],pan
+ assert m['mapOverview'] and m['mapCursorCell']==before['pos'],m
+ send('key 1022');pan=state('map-cursor-right');assert pan['mapCursorCell']==m['mapCursorCell']+1 and pan['cameraX']==m['cameraX'] and pan['cameraY']==m['cameraY'] and pan['pos']==before['pos'],pan
+ send('down 1022',.65);send('up 1022');held=state('map-cursor-held');assert held['mapCursorCell']>pan['mapCursorCell'];time.sleep(.3);assert state('map-cursor-released')['mapCursorCell']==held['mapCursorCell']
  send('key 100');assert state('map-y')['windowCount']==0
- send('key 105');assert state('map-zoom')['cameraZoom']>m['cameraZoom'];send('key 104');assert abs(state('map-zoom-out')['cameraZoom']-m['cameraZoom'])<.001;send('key 96');assert state('map-center')['mapMode']
- shot('map-fullscreen');send('key 97');m=state('map-closed');assert not m['mapMode'] and m['uiVisible'] and m['turn']==before['turn'] and m['cameraZoom']==before['cameraZoom'],m
+ send('key 96');detail=state('map-region-detail');assert detail['mapMode'] and not detail['mapOverview'] and detail['cameraZoom']>m['cameraZoom'] and not detail['uiVisible'],detail
+ cursor=detail['mapCursorCell'];cx=(cursor%(int(detail['mapWidth'])//16))*16+8;cy=(cursor//(int(detail['mapWidth'])//16))*16+8
+ assert abs(detail['cameraX']+detail['cameraWorldWidth']/2-cx)<1 and abs(detail['cameraY']+detail['cameraWorldHeight']/2-cy)<1,detail
+ send('key 105');assert state('map-zoom')['cameraZoom']>detail['cameraZoom'];send('key 104');assert abs(state('map-zoom-out')['cameraZoom']-detail['cameraZoom'])<.001
+ shot('map-region-detail');send('key 97');overview=state('map-back-overview');assert overview['mapMode'] and overview['mapOverview'] and not overview['uiVisible'] and overview['mapCursorCell']==cursor and overview['turn']==before['turn'] and overview['exploredTiles']==before['exploredTiles'],overview
+ shot('map-cursor-overview');send('key 105');assert not state('map-shoulder-detail')['mapOverview'];send('key 97');assert state('map-shoulder-back')['mapOverview']
+ # Cursor clamps at all map boundaries, including long repeated input.
+ w=int(overview['mapWidth'])//16;h=int(overview['mapHeight'])//16
+ for name,key,count,axis,limit in [('right',1022,w,'x',w-1),('left',1021,w,'x',0),('down',1020,h,'y',h-1),('up',1019,h,'y',0)]:
+  send('\n'.join([f'key {key}']*(count+2)),.05);edge=state('map-boundary-'+name);cell=edge['mapCursorCell']
+  assert (cell%w if axis=='x' else cell//w)==limit and edge['mapOverview'] and edge['turn']==before['turn'],edge
+ send('key 97');m=state('map-closed');assert not m['mapMode'] and m['uiVisible'] and m['turn']==before['turn'] and m['cameraZoom']==before['cameraZoom'],m
  # Long Select can also close the map before release, without opening hero info.
  send('down 109',.7);assert state('map-reopen-held')['mapMode'];send('up 109')
  send('down 109',.7);closed=state('map-close-held');assert not closed['mapMode'] and closed['windowCount']==0

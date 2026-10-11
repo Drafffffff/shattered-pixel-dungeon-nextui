@@ -84,7 +84,7 @@ try:
  shot('vault-generated')
  send('down 109',.65);send('up 109');m=state('vault-map');shot('vault-map')
  assert m['mapMode'] and not m['uiVisible'] and m['cameraX']+m['cameraWorldWidth']>=m['mapWidth'] and m['cameraY']+m['cameraWorldHeight']>=m['mapHeight'],m
- send('key 105');assert state('vault-zoom')['cameraZoom']>m['cameraZoom'];send('key 97')
+ send('key 105');assert state('vault-zoom')['cameraZoom']>m['cameraZoom'];send('key 97');assert state('vault-map-overview')['mapOverview'];send('key 97')
  # Reach the new mirror's long dialog by physically walking into the NPC.
  send('fixture-ux vault-mirror');send('key '+str(state('mirror-placed')['fixtureDirection']))
  mirror=state('mirror-dialog');shot('mirror-dialog');assert 'WndOptions' in mirror['windows'] and mirror['focusType'] and not mirror['cursor'],mirror

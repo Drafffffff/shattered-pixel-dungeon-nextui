@@ -167,6 +167,7 @@ public final class RgLauncher {
    && Dungeon.hero!=null && Dungeon.hero.isAlive();
  }
  private static void updateHeldShortcuts(){
+  RgMap.update();
   RgSearchShortcut.update();
   if(selectMapOwner==null || !held.contains(Input.Keys.BUTTON_SELECT))return;
   if(Game.scene()!=selectMapOwner || !canHoldMap() || suppressedModifiers.contains(Input.Keys.BUTTON_SELECT)){
@@ -191,6 +192,7 @@ public final class RgLauncher {
   state.put("gameVersion",Game.version);state.put("versionCode",Game.versionCode);state.put("settingsVersion",SPDSettings.version());
   state.put("heroClass",Dungeon.hero==null?"":Dungeon.hero.heroClass.name());state.put("heroLevel",Dungeon.hero==null?0:Dungeon.hero.lvl);
   state.put("inputText",RgTestFixtures.textValue());
+  state.put("mapOverview",RgMap.overview());state.put("mapCursorCell",RgMap.cursorCell());
   state.put("mapMode",RgMap.active());state.put("uiVisible",com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene.uiCamera.visible);
   state.put("ready",Dungeon.hero!=null && Dungeon.hero.ready);
   state.put("heroAction",Dungeon.hero==null || Dungeon.hero.curAction==null?"":Dungeon.hero.curAction.getClass().getName());
