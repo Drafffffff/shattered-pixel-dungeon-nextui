@@ -43,6 +43,20 @@ def send(cmd,delay=.22):
   if time.monotonic()>deadline:raise RuntimeError('Command not consumed: '+cmd)
   time.sleep(.03)
  time.sleep(delay)
+def wait_for_home():
+ deadline=time.monotonic()+30
+ continued=False;welcome_since=None
+ while time.monotonic()<deadline:
+  text=logpath.read_text()
+  if 'Scene: RgHome' in text:return
+  if not continued and 'Scene: WelcomeScene' in text:
+   if welcome_since is None:welcome_since=time.monotonic()
+   # Welcome.create may automatically advance an unfinished legacy intro.
+   if time.monotonic()-welcome_since>.6:
+    shot('version-upgrade');send('key 96');continued=True
+  if p.poll() is not None:break
+  time.sleep(.1)
+ raise RuntimeError('Upgrade did not reach the home screen\n'+logpath.read_text())
 def shot(name):send(f'shot /test/{relative}/{name}.png')
 def state(name):
  send(f'state /test/{relative}/{name}.json')
@@ -51,7 +65,7 @@ def state(name):
 
 try:
  if options.resume_from:
-  wait_for('Scene: RgHome');shot('home-restored')
+  wait_for_home();shot('home-restored')
   send('key 96');wait_for('Scene: StartScene')
   send('key 1020');send('key 1020');send('key 96');send('key 96');wait_for('Scene: GameScene');time.sleep(2)
  else:

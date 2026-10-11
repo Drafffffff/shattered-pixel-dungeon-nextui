@@ -1,7 +1,7 @@
 {
   "date": "2026-10-12",
   "scope": "RG34XX / 720×480 / 1GB / 纯十字键 / 本轮修复包",
-  "status": "公开发布候选：含交互整合、地图总览/定位、快捷格记忆、短B查看/长B搜索；ARM64/Mesa代表性回归通过，完整剧情及长期实机仍需游玩验收",
+  "status": "4.0.2迁移通过软件渲染回归：新开局、3.3.8两种教程状态旧档、共享交互层与宝库魔镜/代币门/奖励取消/保存重载；实体按键与长期真机仍需验收",
   "keys": [
     "十字键",
     "A",
@@ -1975,5 +1975,7 @@
       "url": "https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/potions/PotionOfStrength.java"
     }
   ],
-  "installedJarSha256": "7066ec77dbaafc7bd5c608208c1b6080bc729262609dffc09fb4655218c722c6"
+  "installedJarSha256": "7066ec77dbaafc7bd5c608208c1b6080bc729262609dffc09fb4655218c722c6",
+  "upstream_version": "4.0.2",
+  "upstream_commit": "57a4e06a4caf162446d1c28caa7983f0493fecf0"
 }

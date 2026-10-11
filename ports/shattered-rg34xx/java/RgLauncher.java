@@ -85,7 +85,7 @@ public final class RgLauncher {
     Gdx.app.getPreferences(SPDSettings.DEFAULT_PREFS_FILE).putBoolean("rg34xx-profile-v1",true).flush();
    }
    ControllerHandler.controllerActive=true; ControllerHandler.lastUsedType=ControllerHandler.ControllerType.NINTENDO;
-   Game.version="3.3.8"; Game.versionCode=896;
+   Game.version="4.0.2"; Game.versionCode=922;
    game=new ShatteredPixelDungeon(new RgPlatform());
    game.create(); game.resize(720,480);
    Runtime.getRuntime().addShutdownHook(new Thread(()->{running=false;try{stopped.await(3,TimeUnit.SECONDS);}catch(InterruptedException ignored){Thread.currentThread().interrupt();}}));
@@ -168,6 +168,8 @@ public final class RgLauncher {
  private static void writeTestState(String path) throws Exception {
   com.badlogic.gdx.utils.ObjectMap<String,Object> state=new com.badlogic.gdx.utils.ObjectMap<>();
   state.put("intro",SPDSettings.intro());
+  state.put("gameVersion",Game.version);state.put("versionCode",Game.versionCode);state.put("settingsVersion",SPDSettings.version());
+  state.put("heroClass",Dungeon.hero==null?"":Dungeon.hero.heroClass.name());state.put("heroLevel",Dungeon.hero==null?0:Dungeon.hero.lvl);
   state.put("inputText",RgTestFixtures.textValue());
   state.put("mapMode",RgMap.active());state.put("uiVisible",com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene.uiCamera.visible);
   state.put("ready",Dungeon.hero!=null && Dungeon.hero.ready);
@@ -192,12 +194,16 @@ public final class RgLauncher {
   state.put("focusText",focus instanceof com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton?((com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton)focus).text():"");
   String slots="";for(int slot=0;slot<QuickSlot.SIZE;slot++)slots+=Dungeon.quickslot.getItem(slot)==null?"empty;":Dungeon.quickslot.getItem(slot).getClass().getSimpleName()+";";
   state.put("quickslots",slots);
-  state.put("depth",Dungeon.depth);
+  state.put("depth",Dungeon.depth);state.put("branch",Dungeon.branch);
+  state.put("levelType",Dungeon.level==null?"":Dungeon.level.getClass().getSimpleName());
+  state.put("fixtureDirection",RgTestFixtures.directionKey);
+  state.put("fixtureNpcPresent",RgTestFixtures.testNpc!=null && Dungeon.level!=null && Dungeon.level.mobs.contains(RgTestFixtures.testNpc));
+  state.put("mirrorUsed",com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp.Quest.mirrorUsed);
   state.put("overlay",RgSystemOverlay.label());
   state.put("scene",Game.scene().getClass().getSimpleName());
   String windows="";int windowCount=0;
   for(com.watabou.noosa.Gizmo member:Game.scene().members())
-   if(member instanceof com.shatteredpixel.shatteredpixeldungeon.ui.Window && member.visible){windows+=member.getClass().getSimpleName()+";";windowCount++;}
+   if(member instanceof com.shatteredpixel.shatteredpixeldungeon.ui.Window && member.visible){String type=member.getClass().getSimpleName();if(type.isEmpty())type=member.getClass().getSuperclass().getSimpleName();windows+=type+";";windowCount++;}
   state.put("windows",windows);
   state.put("windowCount",windowCount);
   state.put("alive",Dungeon.hero==null || Dungeon.hero.isAlive());

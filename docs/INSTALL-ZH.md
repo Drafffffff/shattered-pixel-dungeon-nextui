@@ -10,10 +10,10 @@
 
 | 要下载的文件 | 点击下载 | 用途 |
 | --- | --- | --- |
-| `Shattered-Pixel-Dungeon-v3.3.8-nextui.1-RG34XX.zip`（约 40 MB） | **[下载游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v3.3.8-nextui.1/Shattered-Pixel-Dungeon-v3.3.8-nextui.1-RG34XX.zip)** | 必下，解压后复制游戏文件 |
+| `Shattered-Pixel-Dungeon-v4.0.2-nextui.1-RG34XX.zip`（约 40 MB） | **[下载游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.1/Shattered-Pixel-Dungeon-v4.0.2-nextui.1-RG34XX.zip)** | 必下，解压后复制游戏文件 |
 | `zulu17.54.21-ca-jre17.0.13-linux.squashfs`（约 45 MB） | **[下载 Java 运行库](https://github.com/PortsMaster/PortMaster-New/releases/download/2025-01-20_2237/zulu17.54.21-ca-jre17.0.13-linux.squashfs)** | SD 卡里没有同名文件时下载；保持原样，不解压 |
 
-游戏直链对应目前的 `v3.3.8-nextui.1`。以后更新时，打开[最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)，选择文件名以 **`-RG34XX.zip`** 结尾的附件。
+游戏直链对应目前的 `v4.0.2-nextui.1`。以后更新时，打开[最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)，选择文件名以 **`-RG34XX.zip`** 结尾的附件。
 
 **只想玩游戏，不需要下载** `source.tar.gz`、`third-party-sources.tar.gz`、`Source code (zip)` 或 `Source code (tar.gz)`。它们是给开发者看的源码。`SHA256SUMS` 是可选的下载校验文件。
 
@@ -148,6 +148,8 @@ SD 卡根目录/
 ```text
 SD 卡根目录/.userdata/shared/shattered-rg34xx/
 ```
+
+本次更新为官方 **4.0.2** 的 RG34XX 适配版，按键和文件位置不变。旧存档使用官方兼容逻辑继续；旧局中的部分任务可能仍按旧规则进行，想体验完整的新任务建议新开一局。**4.0.2 保存后的存档不要交给 3.3.8 打开；如需退回旧版，请恢复升级前的存档备份。**
 
 更新包不包含这个目录，按教程复制不会覆盖它。更新前可以把整个 `shattered-rg34xx` 存档文件夹复制到电脑备份。原 PortMaster 版与本适配版的存档目录不同，不会自动导入原版存档。
 

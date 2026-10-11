@@ -56,9 +56,6 @@ public class SPDAction extends GameAction {
 	public static final GameAction SW           = new SPDAction("sw");
 	public static final GameAction SE           = new SPDAction("se");
 	public static final GameAction WAIT_OR_PICKUP   = new SPDAction("wait_or_pickup");
-	// Controller A is deliberately separate from a mouse click.  This prevents
-	// confirming a choice from also issuing a move command to the mouse cursor.
-	public static final GameAction ACCEPT       = new SPDAction("accept");
 
 	public static final GameAction INVENTORY    = new SPDAction("inventory");
 	public static final GameAction INVENTORY_SELECTOR   = new SPDAction("inventory_selector");
@@ -69,11 +66,6 @@ public class SPDAction extends GameAction {
 	public static final GameAction QUICKSLOT_4  = new SPDAction("quickslot_4");
 	public static final GameAction QUICKSLOT_5  = new SPDAction("quickslot_5");
 	public static final GameAction QUICKSLOT_6  = new SPDAction("quickslot_6");
-	// Controller hotbar actions.  The toolbar owns the currently selected entry,
-	// which can be one of the six quickslots, search, or wait.
-	public static final GameAction HOTBAR_PREV  = new SPDAction("hotbar_prev");
-	public static final GameAction HOTBAR_NEXT  = new SPDAction("hotbar_next");
-	public static final GameAction HOTBAR_USE   = new SPDAction("hotbar_use");
 
 	public static final GameAction BAG_1        = new SPDAction("bag_1");
 	public static final GameAction BAG_2        = new SPDAction("bag_2");
@@ -91,7 +83,6 @@ public class SPDAction extends GameAction {
 	public static final GameAction TAG_RESUME   = new SPDAction("tag_resume");
 
 	public static final GameAction CYCLE        = new SPDAction("cycle");
-	public static final GameAction MENU         = new SPDAction("menu");
 
 	public static final GameAction HERO_INFO    = new SPDAction("hero_info");
 	public static final GameAction JOURNAL      = new SPDAction("journal");
@@ -164,27 +155,27 @@ public class SPDAction extends GameAction {
 
 	private static final LinkedHashMap<Integer, GameAction> defaultControllerBindings = new LinkedHashMap<>();
 	static {
-		defaultControllerBindings.put( Input.Keys.BUTTON_START,     SPDAction.MENU );
-		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    SPDAction.HERO_INFO );
+		defaultControllerBindings.put( Input.Keys.BUTTON_START,     SPDAction.BACK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    SPDAction.JOURNAL );
 
-		// A confirms focused UI controls, target cells, and loot at the hero.
-		defaultControllerBindings.put( Input.Keys.BUTTON_A,         SPDAction.ACCEPT );
-		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.BACK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.WAIT_OR_PICKUP );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.LEFT_CLICK );
 		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    SPDAction.LEFT_CLICK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.RIGHT_CLICK );
 
-		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.N );
-		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.W );
-		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.S );
-		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.E );
+		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.TAG_ACTION );
+		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.TAG_LOOT );
+		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.TAG_RESUME );
+		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.CYCLE );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.HOTBAR_PREV );
-		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.HOTBAR_NEXT );
-		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.HOTBAR_USE );
-		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.INVENTORY );
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.WAIT_OR_PICKUP );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.ZOOM_IN );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.ZOOM_OUT );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.ZOOM_IN );
+		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.ZOOM_OUT );
+
+		defaultControllerBindings.put( Input.Keys.BUTTON_A,         SPDAction.TAG_ATTACK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.EXAMINE );
+		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.QUICKSLOT_SELECTOR );
+		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.INVENTORY_SELECTOR );
 	}
 
 	public static LinkedHashMap<Integer, GameAction> getControllerDefaults() {

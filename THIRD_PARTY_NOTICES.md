@@ -1,9 +1,9 @@
 # Attribution and third-party software
 
-This is an unofficial RG34XX/NextUI adaptation, released 2026-10-12. It is not affiliated with or endorsed by the original authors. Changes are provided as adaptation source and deterministic source transformation scripts; the vendored upstream source is unmodified. The upstream developer’s machine-specific Android `local.properties` is omitted and recorded in the source manifest.
+This is an unofficial RG34XX/NextUI adaptation, released 2026-10-12. It is not affiliated with or endorsed by the original authors. Changes are provided as adaptation source and deterministic source transformation scripts; the vendored upstream source is unmodified.
 
-- **Shattered Pixel Dungeon 3.3.8** — Copyright Evan Debenham; based on **Pixel Dungeon**, Copyright Oleg Dolya / Watabou. GPL-3.0-or-later. [Original project](https://github.com/00-Evan/shattered-pixel-dungeon).
-- **D-pad controller fork** — avvstrk and contributors, GPL-3.0-or-later. [Source](https://github.com/avvstrk/shattered-pixel-dungeon-dpad), commit `914561b0b8b98493bd77431f9578ab58fae67029`. Complete snapshot and per-file hashes are included under `vendor/`.
+- **Shattered Pixel Dungeon 4.0.2** — Copyright Evan Debenham; based on **Pixel Dungeon**, Copyright Oleg Dolya / Watabou. GPL-3.0-or-later. [Original project](https://github.com/00-Evan/shattered-pixel-dungeon).
+- **D-pad controller fork** — avvstrk and contributors, GPL-3.0-or-later. [Source](https://github.com/avvstrk/shattered-pixel-dungeon-dpad), commit `914561b0b8b98493bd77431f9578ab58fae67029`. Its Java/controller changes are rebased over official 4.0.2 in `ports/shattered-rg34xx/controller-base.patch`. The complete official 4.0.2 snapshot (`57a4e06a4caf162446d1c28caa7983f0493fecf0`) and per-file hashes are included under `vendor/`.
 - **NextUI adaptation** — contributors to this repository, GPL-3.0-or-later except preserved third-party code headers. Native SDL/JNI bridge, launcher, controls, interaction and rendering patches, tests and packaging are included in `ports/shattered-rg34xx/`.
 - **libGDX 1.14.0** — Copyright Mario Zechner, Nathan Sweet and contributors, Apache-2.0. Includes desktop/headless backends and FreeType JNI. `Lwjgl3GLES20.java` derives from its ANGLE adapter; its original header is retained. [Source](https://github.com/libgdx/libgdx/tree/1.14.0).
 - **gdx-controllers 2.2.4** and **gdx-jnigen-loader 2.5.2** — libGDX contributors, Apache-2.0; corresponding Maven source artifacts are supplied.

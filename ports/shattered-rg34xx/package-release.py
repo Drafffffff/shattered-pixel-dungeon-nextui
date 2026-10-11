@@ -4,7 +4,7 @@
 from pathlib import Path
 import concurrent.futures, hashlib, json, subprocess, sys, tarfile, urllib.request, zipfile
 root=Path(__file__).resolve().parents[2]
-version=sys.argv[1] if len(sys.argv)>1 else 'v3.3.8-nextui.1'
+version=sys.argv[1] if len(sys.argv)>1 else 'v4.0.2-nextui.1'
 if not version or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_' for c in version):
     raise SystemExit('Invalid version')
 build=root/'build/shattered-rg34xx';dist=build/'dist';out=build/'release'/version
@@ -23,7 +23,7 @@ with zipfile.ZipFile(binary,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     z.write(root/'THIRD_PARTY_NOTICES.md',target+'THIRD_PARTY_NOTICES.md')
     for p in (root/'licenses').rglob('*'):
         if p.is_file(): z.write(p,target+'licenses/'+str(p.relative_to(root/'licenses')))
-    z.writestr(target+'BUILD-INFO.json',json.dumps({'version':version,'source_commit':commit,'upstream_commit':'914561b0b8b98493bd77431f9578ab58fae67029','target':'RG34XX H700 NextUI 720x480','source_repository':'https://github.com/Drafffffff/shattered-pixel-dungeon-nextui'},indent=2)+'\n')
+    z.writestr(target+'BUILD-INFO.json',json.dumps({'version':version,'source_commit':commit,'upstream_commit':'57a4e06a4caf162446d1c28caa7983f0493fecf0','target':'RG34XX H700 NextUI 720x480','source_repository':'https://github.com/Drafffffff/shattered-pixel-dungeon-nextui'},indent=2)+'\n')
 source=out/(prefix+'-source.tar.gz')
 subprocess.run(['git','archive','--format=tar.gz','--prefix='+prefix+'/', '-o',str(source),'HEAD'],cwd=root,check=True)
 cache=build/'third-party-sources';cache.mkdir(parents=True,exist_ok=True)

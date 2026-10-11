@@ -95,14 +95,6 @@ public class Group extends Gizmo {
 	public synchronized int indexOf( Gizmo g ) {
 		return members.indexOf( g );
 	}
-
-	/**
-	 * Returns a stable snapshot of this group's children.  UI navigation uses
-	 * this instead of exposing the mutable member list directly.
-	 */
-	public synchronized ArrayList<Gizmo> members() {
-		return new ArrayList<>(members);
-	}
 	
 	public synchronized Gizmo add( Gizmo g ) {
 		

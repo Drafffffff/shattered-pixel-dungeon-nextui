@@ -53,13 +53,10 @@ public class WndTabbed extends Window {
 			@Override
 			public boolean onSignal(KeyEvent keyEvent) {
 
-				if (!keyEvent.pressed && (KeyBindings.getActionForKey(keyEvent) == SPDAction.CYCLE
-						|| KeyBindings.getActionForKey(keyEvent) == SPDAction.HOTBAR_NEXT
-						|| KeyBindings.getActionForKey(keyEvent) == SPDAction.HOTBAR_PREV)){
+				if (!keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == SPDAction.CYCLE){
 					int idx = tabs.indexOf(selected);
-					idx += KeyBindings.getActionForKey(keyEvent) == SPDAction.HOTBAR_PREV ? -1 : 1;
+					idx++;
 					if (idx >= tabs.size()) idx = 0;
-					if (idx < 0) idx = tabs.size()-1;
 					tabs.get(idx).onClick();
 
 					return true;

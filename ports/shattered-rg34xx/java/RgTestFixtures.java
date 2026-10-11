@@ -7,6 +7,18 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 /** Only called by the explicitly enabled local test command channel. */
 public final class RgTestFixtures {
  private static WndTextInput lastText;
+ public static int directionKey;
+ public static com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC testNpc;
+ private static void place(com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC npc){
+  int[] offsets={1,-1,Dungeon.level.width(),-Dungeon.level.width()},keys={1022,1021,1020,1019};
+  for(int i=0;i<offsets.length;i++){
+   int cell=Dungeon.hero.pos+offsets[i];
+   if(cell>=0 && cell<Dungeon.level.length() && Dungeon.level.passable[cell] && com.shatteredpixel.shatteredpixeldungeon.actors.Actor.findChar(cell)==null){
+    npc.pos=cell;directionKey=keys[i];testNpc=npc;GameScene.add(npc);Dungeon.level.heroFOV[cell]=true;Dungeon.hero.checkVisibleMobs();return;
+   }
+  }
+  throw new IllegalStateException("No adjacent fixture cell");
+ }
  public static String textValue(){
   if(lastText==null || lastText.parent==null)return "";
   try{java.lang.reflect.Field f=WndTextInput.class.getDeclaredField("textBox");f.setAccessible(true);return ((com.watabou.noosa.TextInput)f.get(lastText)).getText();}
@@ -15,6 +27,20 @@ public final class RgTestFixtures {
  public static void run(String name){
   if(System.getProperty("nextui.commands")==null)throw new IllegalStateException("Test mode required");
   switch(name){
+   case "vault":{
+    com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp.Quest.reset();
+    try{java.lang.reflect.Field old=com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp.Quest.class.getDeclaredField("oldQuest");old.setAccessible(true);old.setBoolean(null,false);for(String key:new String[]{"spawned","given"}){java.lang.reflect.Field flag=com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp.Quest.class.getDeclaredField(key);flag.setAccessible(true);flag.setBoolean(null,true);}}catch(Exception e){throw new RuntimeException(e);}
+    InterlevelScene.curTransition=new com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition(Dungeon.level,Dungeon.hero.pos,com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition.Type.BRANCH_EXIT,17,1,com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition.Type.BRANCH_ENTRANCE);
+    InterlevelScene.mode=InterlevelScene.Mode.DESCEND;ShatteredPixelDungeon.switchNoFade(InterlevelScene.class);break;
+   }
+   case "vault-mirror":{
+    com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.VaultMirror mirror=new com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.VaultMirror();mirror.createReward(Dungeon.hero.heroClass);place(mirror);break;
+   }
+   case "vault-door":{
+    new com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken().quantity(10).collect();
+    place(new com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.VaultTokenDoor());break;
+   }
+   case "vault-exit":new com.shatteredpixel.shatteredpixeldungeon.items.quest.ImpStatue().collect();new com.shatteredpixel.shatteredpixeldungeon.items.quest.EscapeCrystal().execute(Dungeon.hero,com.shatteredpixel.shatteredpixeldungeon.items.quest.EscapeCrystal.AC_USE);break;
    case "buff":com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.affect(Dungeon.hero,com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless.class,20f);break;
    case "loot":Dungeon.level.drop(new com.shatteredpixel.shatteredpixeldungeon.items.Gold(17),Dungeon.hero.pos);break;
    case "rat":{

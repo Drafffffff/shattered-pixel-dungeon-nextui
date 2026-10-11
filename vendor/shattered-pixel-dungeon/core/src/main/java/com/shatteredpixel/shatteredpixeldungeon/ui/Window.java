@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
-import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
@@ -50,7 +49,6 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 	protected PointerArea blocker;
 	protected ShadowBox shadow;
 	protected NinePatch chrome;
-	private ControllerNavigator controllerNavigator = new ControllerNavigator();
 
 	public static final int WHITE = 0xFFFFFF;
 	public static final int TITLE_COLOR = 0xFFFF44;
@@ -204,7 +202,6 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 	
 	@Override
 	public void destroy() {
-		controllerNavigator.clear();
 		super.destroy();
 		
 		Camera.remove( camera );
@@ -213,15 +210,6 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 
 	@Override
 	public boolean onSignal( KeyEvent event ) {
-		if (KeyBindings.getActionForKey(event) == SPDAction.ACCEPT) {
-			Game.inputHandler.emulateTouch(ControllerHandler.CONTROLLER_POINTER_ID, PointerEvent.LEFT, event.pressed);
-			return true;
-		}
-
-		if (event.pressed && controllerNavigator.move(this, KeyBindings.getActionForKey(event))) {
-			return true;
-		}
-
 		if (event.pressed) {
 			if (KeyBindings.getActionForKey( event ) == SPDAction.BACK
 				|| KeyBindings.getActionForKey( event ) == SPDAction.WAIT){

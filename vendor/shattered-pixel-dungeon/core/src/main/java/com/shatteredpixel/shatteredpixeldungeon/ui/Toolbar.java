@@ -65,7 +65,6 @@ public class Toolbar extends Component {
 	private Tool btnInventory;
 	private QuickslotTool[] btnQuick;
 	private SlotSwapTool btnSwap;
-	private int selectedHotbarSlot;
 	
 	private PickedUpItem pickedUp;
 	
@@ -378,6 +377,7 @@ public class Toolbar extends Component {
 				arrow.x = left() + (width - arrow.width())/2;
 				arrow.y = bottom()-arrow.height-1;
 				arrow.angle = bottom() == camera().height ? 0 : 180;
+				PixelScene.align(arrow);
 			}
 
 			@Override
@@ -389,51 +389,6 @@ public class Toolbar extends Component {
 			}
 		});
 		btnInventory.icon( 160, 0, 16, 16 );
-
-		// A controller-first hotbar: six quickslots followed by search and wait.
-		// The buttons are deliberately invisible; Button supplies key press,
-		// release, and long-press handling for us.
-		add(new Button(){
-			@Override
-			protected void onClick() {
-				cycleHotbar(-1);
-			}
-
-			@Override
-			public GameAction keyAction() {
-				return SPDAction.HOTBAR_PREV;
-			}
-		});
-
-		add(new Button(){
-			@Override
-			protected void onClick() {
-				cycleHotbar(1);
-			}
-
-			@Override
-			public GameAction keyAction() {
-				return SPDAction.HOTBAR_NEXT;
-			}
-		});
-
-		add(new Button(){
-			@Override
-			protected void onClick() {
-				useSelectedHotbar(false);
-			}
-
-			@Override
-			protected boolean onLongClick() {
-				useSelectedHotbar(true);
-				return true;
-			}
-
-			@Override
-			public GameAction keyAction() {
-				return SPDAction.HOTBAR_USE;
-			}
-		});
 
 		//hidden button for inventory selector keybind
 		add(new Button(){
@@ -474,6 +429,7 @@ public class Toolbar extends Component {
 								if (b.misc() != null) items.add(0, b.misc());
 								if (b.artifact() != null) items.add(0, b.artifact());
 								if (b.armor() != null) items.add(0, b.armor());
+								if (b.secondWep() != null) items.add(0, b.secondWep());
 								if (b.weapon() != null) items.add(0, b.weapon());
 							}
 
@@ -526,43 +482,6 @@ public class Toolbar extends Component {
 		});
 
 		add(pickedUp = new PickedUpItem());
-	}
-
-	private void cycleHotbar(int direction) {
-		if (GameScene.showingWindow()) return;
-
-		selectedHotbarSlot = (selectedHotbarSlot + direction + QuickSlot.SIZE + 2) % (QuickSlot.SIZE + 2);
-		updateHotbarSelection();
-	}
-
-	private void useSelectedHotbar(boolean assign) {
-		if (GameScene.showingWindow() || Dungeon.hero == null || !Dungeon.hero.ready) return;
-
-		// Search owns its second press: it converts an active examine selector
-		// into a full search. Other hotbar entries retain the normal cancel-first
-		// behavior for targeting and pending actions.
-		if (selectedHotbarSlot != QuickSlot.SIZE && GameScene.cancel()) return;
-
-		if (selectedHotbarSlot < QuickSlot.SIZE) {
-			if (assign || Dungeon.quickslot.getItem(selectedHotbarSlot) == null || Dungeon.quickslot.isPlaceholder(selectedHotbarSlot)) {
-				btnQuick[selectedHotbarSlot].assign();
-			} else {
-				btnQuick[selectedHotbarSlot].activate();
-			}
-		} else if (selectedHotbarSlot == QuickSlot.SIZE) {
-			btnSearch.onClick();
-		} else {
-			if (assign) btnWait.onLongClick();
-			else        btnWait.onClick();
-		}
-	}
-
-	private void updateHotbarSelection() {
-		for (int i = 0; i < btnQuick.length; i++) {
-			btnQuick[i].setSelected(i == selectedHotbarSlot);
-		}
-		btnSearch.setSelected(selectedHotbarSlot == QuickSlot.SIZE);
-		btnWait.setSelected(selectedHotbarSlot == QuickSlot.SIZE + 1);
 	}
 	
 	@Override
@@ -747,8 +666,6 @@ public class Toolbar extends Component {
 		if (!Dungeon.hero.isAlive()) {
 			btnInventory.enable(true);
 		}
-
-		updateHotbarSelection();
 	}
 
 	public void alpha( float value ){
@@ -856,14 +773,6 @@ public class Toolbar extends Component {
 				active = value;
 			}
 		}
-
-		public void setSelected(boolean value) {
-			if (value) {
-				base.tint(0xFFF3A3, 1f);
-			} else {
-				base.resetColor();
-			}
-		}
 	}
 	
 	private static class QuickslotTool extends Tool {
@@ -902,14 +811,6 @@ public class Toolbar extends Component {
 		public void enable( boolean value ) {
 			super.enable( value && visible );
 			slot.enable( value && visible );
-		}
-
-		public void activate() {
-			slot.activate();
-		}
-
-		public void assign() {
-			slot.assign();
 		}
 	}
 

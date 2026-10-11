@@ -33,18 +33,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
-import com.watabou.input.ControllerHandler;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.PointF;
 
 public class QuickSlotButton extends Button {
 	
@@ -227,16 +222,6 @@ public class QuickSlotButton extends Button {
 		}
 	}
 
-	/** Used by the controller hotbar without synthesising pointer input. */
-	public void activate() {
-		slot.onClick();
-	}
-
-	/** Opens the normal quickslot assignment picker. */
-	public void assign() {
-		onClick();
-	}
-
 	@Override
 	protected void onRightClick() {
 		onClick();
@@ -287,7 +272,7 @@ public class QuickSlotButton extends Button {
 
 	public static void set(int slotNum, Item item){
 		Dungeon.quickslot.setSlot( slotNum , item );
-		refresh();
+		Item.updateQuickslot();
 
 		//Remember if the player adds the waterskin as one of their first actions.
 		if (Statistics.duration + Actor.now() <= 10){
@@ -349,14 +334,6 @@ public class QuickSlotButton extends Button {
 			crossB.point(slot.sprite.center(crossB));
 			crossB.visible = true;
 
-			int cell = autoAim(lastTarget, select(slotNum));
-			if (cell != -1) {
-				PointF world = DungeonTilemap.tileCenterToWorld(cell);
-				Point screen = Camera.main.cameraToScreen(world.x, world.y);
-				ControllerHandler.setControllerPointer(true);
-				ControllerHandler.updateControllerPointer(new PointF(screen.x, screen.y), false);
-			}
-
 		} else {
 
 			lastTarget = null;
@@ -415,7 +392,9 @@ public class QuickSlotButton extends Button {
 	}
 	
 	public static void target( Char target ) {
-		if (target != null && target.alignment != Char.Alignment.ALLY) {
+		if (target != null
+				&& target.alignment != Char.Alignment.ALLY
+				&& !Char.hasProp(target, Char.Property.OBJECT)) {
 			lastTarget = target;
 			
 			TargetHealthIndicator.instance.target( target );

@@ -1,0 +1,534 @@
+diff --git a/SPD-classes/src/main/java/com/watabou/noosa/Group.java b/SPD-classes/src/main/java/com/watabou/noosa/Group.java
+index 80a0d54e1..2f2b7db87 100644
+--- a/SPD-classes/src/main/java/com/watabou/noosa/Group.java
++++ b/SPD-classes/src/main/java/com/watabou/noosa/Group.java
+@@ -95,6 +95,14 @@ public class Group extends Gizmo {
+ 	public synchronized int indexOf( Gizmo g ) {
+ 		return members.indexOf( g );
+ 	}
++
++	/**
++	 * Returns a stable snapshot of this group's children.  UI navigation uses
++	 * this instead of exposing the mutable member list directly.
++	 */
++	public synchronized ArrayList<Gizmo> members() {
++		return new ArrayList<>(members);
++	}
+ 	
+ 	public synchronized Gizmo add( Gizmo g ) {
+ 		
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SPDAction.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SPDAction.java
+index 1a1bda449..32da842bc 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SPDAction.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SPDAction.java
+@@ -56,6 +56,9 @@ public class SPDAction extends GameAction {
+ 	public static final GameAction SW           = new SPDAction("sw");
+ 	public static final GameAction SE           = new SPDAction("se");
+ 	public static final GameAction WAIT_OR_PICKUP   = new SPDAction("wait_or_pickup");
++	// Controller A is deliberately separate from a mouse click.  This prevents
++	// confirming a choice from also issuing a move command to the mouse cursor.
++	public static final GameAction ACCEPT       = new SPDAction("accept");
+ 
+ 	public static final GameAction INVENTORY    = new SPDAction("inventory");
+ 	public static final GameAction INVENTORY_SELECTOR   = new SPDAction("inventory_selector");
+@@ -66,6 +69,11 @@ public class SPDAction extends GameAction {
+ 	public static final GameAction QUICKSLOT_4  = new SPDAction("quickslot_4");
+ 	public static final GameAction QUICKSLOT_5  = new SPDAction("quickslot_5");
+ 	public static final GameAction QUICKSLOT_6  = new SPDAction("quickslot_6");
++	// Controller hotbar actions.  The toolbar owns the currently selected entry,
++	// which can be one of the six quickslots, search, or wait.
++	public static final GameAction HOTBAR_PREV  = new SPDAction("hotbar_prev");
++	public static final GameAction HOTBAR_NEXT  = new SPDAction("hotbar_next");
++	public static final GameAction HOTBAR_USE   = new SPDAction("hotbar_use");
+ 
+ 	public static final GameAction BAG_1        = new SPDAction("bag_1");
+ 	public static final GameAction BAG_2        = new SPDAction("bag_2");
+@@ -83,6 +91,7 @@ public class SPDAction extends GameAction {
+ 	public static final GameAction TAG_RESUME   = new SPDAction("tag_resume");
+ 
+ 	public static final GameAction CYCLE        = new SPDAction("cycle");
++	public static final GameAction MENU         = new SPDAction("menu");
+ 
+ 	public static final GameAction HERO_INFO    = new SPDAction("hero_info");
+ 	public static final GameAction JOURNAL      = new SPDAction("journal");
+@@ -155,27 +164,27 @@ public class SPDAction extends GameAction {
+ 
+ 	private static final LinkedHashMap<Integer, GameAction> defaultControllerBindings = new LinkedHashMap<>();
+ 	static {
+-		defaultControllerBindings.put( Input.Keys.BUTTON_START,     SPDAction.BACK );
+-		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    SPDAction.JOURNAL );
++		defaultControllerBindings.put( Input.Keys.BUTTON_START,     SPDAction.MENU );
++		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    SPDAction.HERO_INFO );
+ 
+-		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.LEFT_CLICK );
++		// A confirms focused UI controls, target cells, and loot at the hero.
++		defaultControllerBindings.put( Input.Keys.BUTTON_A,         SPDAction.ACCEPT );
++		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.BACK );
++		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.WAIT_OR_PICKUP );
+ 		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    SPDAction.LEFT_CLICK );
+-		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.RIGHT_CLICK );
+-
+-		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.TAG_ACTION );
+-		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.TAG_LOOT );
+-		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.TAG_RESUME );
+-		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.CYCLE );
+ 
+-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.WAIT_OR_PICKUP );
++		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.N );
++		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.W );
++		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.S );
++		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.E );
+ 
+-		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.ZOOM_IN );
+-		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.ZOOM_OUT );
++		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.HOTBAR_PREV );
++		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.HOTBAR_NEXT );
++		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.HOTBAR_USE );
++		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.INVENTORY );
+ 
+-		defaultControllerBindings.put( Input.Keys.BUTTON_A,         SPDAction.TAG_ATTACK );
+-		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.EXAMINE );
+-		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.QUICKSLOT_SELECTOR );
+-		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.INVENTORY_SELECTOR );
++		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.ZOOM_IN );
++		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.ZOOM_OUT );
+ 	}
+ 
+ 	public static LinkedHashMap<Integer, GameAction> getControllerDefaults() {
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/ControllerNavigator.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/ControllerNavigator.java
+new file mode 100644
+index 000000000..6c04fcbf9
+--- /dev/null
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/ControllerNavigator.java
+@@ -0,0 +1,82 @@
++package com.shatteredpixel.shatteredpixeldungeon.ui;
++
++import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
++import com.watabou.input.ControllerHandler;
++import com.watabou.input.GameAction;
++import com.watabou.noosa.Camera;
++import com.watabou.noosa.Gizmo;
++import com.watabou.noosa.Group;
++import com.watabou.utils.Point;
++import com.watabou.utils.PointF;
++
++import java.util.ArrayList;
++
++/** Moves the controller's virtual cursor between usable UI buttons. */
++public class ControllerNavigator {
++
++	private Button focused;
++
++	public void clear() {
++		focused = null;
++	}
++
++	public boolean move(Group root, GameAction action) {
++		int dx = 0;
++		int dy = 0;
++		if (action == SPDAction.N) dy = -1;
++		else if (action == SPDAction.S) dy = 1;
++		else if (action == SPDAction.W) dx = -1;
++		else if (action == SPDAction.E) dx = 1;
++		else return false;
++
++		ArrayList<Button> buttons = new ArrayList<>();
++		collectButtons(root, buttons);
++		if (buttons.isEmpty()) return false;
++
++		if (!buttons.contains(focused)) {
++			focused = buttons.get(0);
++		}
++
++		Point origin = screenCenter(focused);
++		Button next = null;
++		float bestScore = Float.MAX_VALUE;
++		for (Button candidate : buttons) {
++			if (candidate == focused) continue;
++			Point point = screenCenter(candidate);
++			float primary = dx != 0 ? (point.x - origin.x) * dx : (point.y - origin.y) * dy;
++			if (primary <= 0) continue;
++			float perpendicular = dx != 0 ? Math.abs(point.y - origin.y) : Math.abs(point.x - origin.x);
++			float score = primary + perpendicular * 2f;
++			if (score < bestScore) {
++				bestScore = score;
++				next = candidate;
++			}
++		}
++
++		if (next != null) focused = next;
++		movePointer(focused);
++		return true;
++	}
++
++	private void collectButtons(Group group, ArrayList<Button> buttons) {
++		for (Gizmo child : group.members()) {
++			if (child instanceof Button && child.isActive() && child.isVisible()) {
++				buttons.add((Button) child);
++			}
++			if (child instanceof Group) {
++				collectButtons((Group) child, buttons);
++			}
++		}
++	}
++
++	private Point screenCenter(Button button) {
++		Camera camera = button.camera();
++		return camera.cameraToScreen(button.centerX(), button.centerY());
++	}
++
++	private void movePointer(Button button) {
++		Point point = screenCenter(button);
++		ControllerHandler.setControllerPointer(true);
++		ControllerHandler.updateControllerPointer(new PointF(point.x, point.y), true);
++	}
++}
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/InventoryPane.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/InventoryPane.java
+index 27bbc15c5..1bfe422b2 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/InventoryPane.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/InventoryPane.java
+@@ -43,12 +43,14 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
+ import com.watabou.gltextures.TextureCache;
+ import com.watabou.input.GameAction;
++import com.watabou.input.ControllerHandler;
+ import com.watabou.input.KeyBindings;
+ import com.watabou.input.KeyEvent;
+ import com.watabou.input.PointerEvent;
+ import com.watabou.noosa.BitmapText;
+ import com.watabou.noosa.ColorBlock;
+ import com.watabou.noosa.Image;
++import com.watabou.noosa.Game;
+ import com.watabou.noosa.NinePatch;
+ import com.watabou.noosa.PointerArea;
+ import com.watabou.noosa.ui.Component;
+@@ -66,6 +68,8 @@ public class InventoryPane extends Component {
+ 	private PointerArea blocker;
+ 
+ 	private Signal.Listener<KeyEvent> keyBlocker;
++	private Signal.Listener<KeyEvent> navigationListener;
++	private ControllerNavigator controllerNavigator = new ControllerNavigator();
+ 
+ 	private static InventoryPane instance;
+ 
+@@ -107,6 +111,7 @@ public class InventoryPane extends Component {
+ 	@Override
+ 	public synchronized void destroy() {
+ 		KeyEvent.removeKeyListener(keyBlocker);
++		KeyEvent.removeKeyListener(navigationListener);
+ 		super.destroy();
+ 		if (instance == this) instance = null;
+ 	}
+@@ -140,7 +145,11 @@ public class InventoryPane extends Component {
+ 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_2
+ 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_3
+ 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_4
+-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_5){
++						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_5
++						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.N
++						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.S
++						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.W
++						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.E){
+ 					//any windows opened as a consequence of this should be centered on the inventory
+ 					GameScene.centerNextWndOnInvPane();
+ 					selector.onSelect(null);
+@@ -152,6 +161,20 @@ public class InventoryPane extends Component {
+ 			}
+ 		};
+ 
++		navigationListener = new Signal.Listener<KeyEvent>() {
++			@Override
++			public boolean onSignal(KeyEvent event) {
++				if (InventoryPane.this.visible && !GameScene.showingWindow() && !GameScene.selectingCell()
++						&& KeyBindings.getActionForKey(event) == SPDAction.ACCEPT) {
++					Game.inputHandler.emulateTouch(ControllerHandler.CONTROLLER_POINTER_ID, PointerEvent.LEFT, event.pressed);
++					return true;
++				}
++				return event.pressed && InventoryPane.this.visible && !GameScene.showingWindow()
++						&& controllerNavigator.move(InventoryPane.this, KeyBindings.getActionForKey(event));
++			}
++		};
++		KeyEvent.addKeyListener(navigationListener);
++
+ 		equipped = new ArrayList<>();
+ 		for (int i = 0; i < 5; i++){
+ 			InventorySlot btn = new InventoryPaneSlot(null);
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/MenuPane.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/MenuPane.java
+index 6c7bc5775..27ab40a4a 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/MenuPane.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/MenuPane.java
+@@ -410,7 +410,7 @@ public class MenuPane extends Component {
+ 
+ 		@Override
+ 		public GameAction keyAction() {
+-			return GameAction.BACK;
++			return SPDAction.MENU;
+ 		}
+ 
+ 		@Override
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/QuickSlotButton.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/QuickSlotButton.java
+index be77b825a..5c933d268 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/QuickSlotButton.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/QuickSlotButton.java
+@@ -33,13 +33,18 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
++import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
+ import com.watabou.input.GameAction;
++import com.watabou.input.ControllerHandler;
++import com.watabou.noosa.Camera;
+ import com.watabou.noosa.Image;
+ import com.watabou.utils.BArray;
+ import com.watabou.utils.PathFinder;
++import com.watabou.utils.Point;
++import com.watabou.utils.PointF;
+ 
+ public class QuickSlotButton extends Button {
+ 	
+@@ -222,6 +227,16 @@ public class QuickSlotButton extends Button {
+ 		}
+ 	}
+ 
++	/** Used by the controller hotbar without synthesising pointer input. */
++	public void activate() {
++		slot.onClick();
++	}
++
++	/** Opens the normal quickslot assignment picker. */
++	public void assign() {
++		onClick();
++	}
++
+ 	@Override
+ 	protected void onRightClick() {
+ 		onClick();
+@@ -334,6 +349,14 @@ public class QuickSlotButton extends Button {
+ 			crossB.point(slot.sprite.center(crossB));
+ 			crossB.visible = true;
+ 
++			int cell = autoAim(lastTarget, select(slotNum));
++			if (cell != -1) {
++				PointF world = DungeonTilemap.tileCenterToWorld(cell);
++				Point screen = Camera.main.cameraToScreen(world.x, world.y);
++				ControllerHandler.setControllerPointer(true);
++				ControllerHandler.updateControllerPointer(new PointF(screen.x, screen.y), false);
++			}
++
+ 		} else {
+ 
+ 			lastTarget = null;
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Toolbar.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Toolbar.java
+index 2dcab6a1b..01f857eb6 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Toolbar.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Toolbar.java
+@@ -65,6 +65,7 @@ public class Toolbar extends Component {
+ 	private Tool btnInventory;
+ 	private QuickslotTool[] btnQuick;
+ 	private SlotSwapTool btnSwap;
++	private int selectedHotbarSlot;
+ 	
+ 	private PickedUpItem pickedUp;
+ 	
+@@ -390,6 +391,51 @@ public class Toolbar extends Component {
+ 		});
+ 		btnInventory.icon( 160, 0, 16, 16 );
+ 
++		// A controller-first hotbar: six quickslots followed by search and wait.
++		// The buttons are deliberately invisible; Button supplies key press,
++		// release, and long-press handling for us.
++		add(new Button(){
++			@Override
++			protected void onClick() {
++				cycleHotbar(-1);
++			}
++
++			@Override
++			public GameAction keyAction() {
++				return SPDAction.HOTBAR_PREV;
++			}
++		});
++
++		add(new Button(){
++			@Override
++			protected void onClick() {
++				cycleHotbar(1);
++			}
++
++			@Override
++			public GameAction keyAction() {
++				return SPDAction.HOTBAR_NEXT;
++			}
++		});
++
++		add(new Button(){
++			@Override
++			protected void onClick() {
++				useSelectedHotbar(false);
++			}
++
++			@Override
++			protected boolean onLongClick() {
++				useSelectedHotbar(true);
++				return true;
++			}
++
++			@Override
++			public GameAction keyAction() {
++				return SPDAction.HOTBAR_USE;
++			}
++		});
++
+ 		//hidden button for inventory selector keybind
+ 		add(new Button(){
+ 			@Override
+@@ -483,6 +529,43 @@ public class Toolbar extends Component {
+ 
+ 		add(pickedUp = new PickedUpItem());
+ 	}
++
++	private void cycleHotbar(int direction) {
++		if (GameScene.showingWindow()) return;
++
++		selectedHotbarSlot = (selectedHotbarSlot + direction + QuickSlot.SIZE + 2) % (QuickSlot.SIZE + 2);
++		updateHotbarSelection();
++	}
++
++	private void useSelectedHotbar(boolean assign) {
++		if (GameScene.showingWindow() || Dungeon.hero == null || !Dungeon.hero.ready) return;
++
++		// Search owns its second press: it converts an active examine selector
++		// into a full search. Other hotbar entries retain the normal cancel-first
++		// behavior for targeting and pending actions.
++		if (selectedHotbarSlot != QuickSlot.SIZE && GameScene.cancel()) return;
++
++		if (selectedHotbarSlot < QuickSlot.SIZE) {
++			if (assign || Dungeon.quickslot.getItem(selectedHotbarSlot) == null || Dungeon.quickslot.isPlaceholder(selectedHotbarSlot)) {
++				btnQuick[selectedHotbarSlot].assign();
++			} else {
++				btnQuick[selectedHotbarSlot].activate();
++			}
++		} else if (selectedHotbarSlot == QuickSlot.SIZE) {
++			btnSearch.onClick();
++		} else {
++			if (assign) btnWait.onLongClick();
++			else        btnWait.onClick();
++		}
++	}
++
++	private void updateHotbarSelection() {
++		for (int i = 0; i < btnQuick.length; i++) {
++			btnQuick[i].setSelected(i == selectedHotbarSlot);
++		}
++		btnSearch.setSelected(selectedHotbarSlot == QuickSlot.SIZE);
++		btnWait.setSelected(selectedHotbarSlot == QuickSlot.SIZE + 1);
++	}
+ 	
+ 	@Override
+ 	protected void layout() {
+@@ -666,6 +749,8 @@ public class Toolbar extends Component {
+ 		if (!Dungeon.hero.isAlive()) {
+ 			btnInventory.enable(true);
+ 		}
++
++		updateHotbarSelection();
+ 	}
+ 
+ 	public void alpha( float value ){
+@@ -773,6 +858,14 @@ public class Toolbar extends Component {
+ 				active = value;
+ 			}
+ 		}
++
++		public void setSelected(boolean value) {
++			if (value) {
++				base.tint(0xFFF3A3, 1f);
++			} else {
++				base.resetColor();
++			}
++		}
+ 	}
+ 	
+ 	private static class QuickslotTool extends Tool {
+@@ -812,6 +905,14 @@ public class Toolbar extends Component {
+ 			super.enable( value && visible );
+ 			slot.enable( value && visible );
+ 		}
++
++		public void activate() {
++			slot.activate();
++		}
++
++		public void assign() {
++			slot.assign();
++		}
+ 	}
+ 
+ 	public static boolean swappedQuickslots = false;
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Window.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Window.java
+index f9d3ca601..7e0e3195e 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Window.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/Window.java
+@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+ import com.watabou.input.KeyBindings;
+ import com.watabou.input.KeyEvent;
+ import com.watabou.input.PointerEvent;
++import com.watabou.input.ControllerHandler;
+ import com.watabou.noosa.Camera;
+ import com.watabou.noosa.Game;
+ import com.watabou.noosa.Group;
+@@ -49,6 +50,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
+ 	protected PointerArea blocker;
+ 	protected ShadowBox shadow;
+ 	protected NinePatch chrome;
++	private ControllerNavigator controllerNavigator = new ControllerNavigator();
+ 
+ 	public static final int WHITE = 0xFFFFFF;
+ 	public static final int TITLE_COLOR = 0xFFFF44;
+@@ -202,6 +204,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
+ 	
+ 	@Override
+ 	public void destroy() {
++		controllerNavigator.clear();
+ 		super.destroy();
+ 		
+ 		Camera.remove( camera );
+@@ -210,6 +213,15 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
+ 
+ 	@Override
+ 	public boolean onSignal( KeyEvent event ) {
++		if (KeyBindings.getActionForKey(event) == SPDAction.ACCEPT) {
++			Game.inputHandler.emulateTouch(ControllerHandler.CONTROLLER_POINTER_ID, PointerEvent.LEFT, event.pressed);
++			return true;
++		}
++
++		if (event.pressed && controllerNavigator.move(this, KeyBindings.getActionForKey(event))) {
++			return true;
++		}
++
+ 		if (event.pressed) {
+ 			if (KeyBindings.getActionForKey( event ) == SPDAction.BACK
+ 				|| KeyBindings.getActionForKey( event ) == SPDAction.WAIT){
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndTabbed.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndTabbed.java
+index 05b4e0139..f8788cafa 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndTabbed.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndTabbed.java
+@@ -53,10 +53,13 @@ public class WndTabbed extends Window {
+ 			@Override
+ 			public boolean onSignal(KeyEvent keyEvent) {
+ 
+-				if (!keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == SPDAction.CYCLE){
++				if (!keyEvent.pressed && (KeyBindings.getActionForKey(keyEvent) == SPDAction.CYCLE
++						|| KeyBindings.getActionForKey(keyEvent) == SPDAction.HOTBAR_NEXT
++						|| KeyBindings.getActionForKey(keyEvent) == SPDAction.HOTBAR_PREV)){
+ 					int idx = tabs.indexOf(selected);
+-					idx++;
++					idx += KeyBindings.getActionForKey(keyEvent) == SPDAction.HOTBAR_PREV ? -1 : 1;
+ 					if (idx >= tabs.size()) idx = 0;
++					if (idx < 0) idx = tabs.size()-1;
+ 					tabs.get(idx).onClick();
+ 
+ 					return true;

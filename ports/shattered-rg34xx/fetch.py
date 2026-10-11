@@ -5,7 +5,7 @@ import concurrent.futures, hashlib, json, shutil, subprocess, urllib.request
 root=Path(__file__).resolve().parents[2]
 build=root/'build/shattered-rg34xx'
 source=build/'source'
-commit='914561b0b8b98493bd77431f9578ab58fae67029'
+commit='57a4e06a4caf162446d1c28caa7983f0493fecf0'
 vendor=root/'vendor/shattered-pixel-dungeon'
 if vendor.exists():
     manifest=json.loads((root/'vendor/upstream-manifest.json').read_text())
@@ -18,7 +18,7 @@ if vendor.exists():
         shutil.copytree(vendor,source)
         (source/'.upstream-revision').write_text(commit+'\n')
 if not source.exists():
-    subprocess.run(['git','clone','https://github.com/avvstrk/shattered-pixel-dungeon-dpad.git',str(source)],check=True)
+    subprocess.run(['git','clone','https://github.com/00-Evan/shattered-pixel-dungeon.git',str(source)],check=True)
 if (source/'.git').exists():
     if subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()!=commit:
         subprocess.run(['git','-C',str(source),'checkout','--detach',commit],check=True)

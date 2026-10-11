@@ -410,7 +410,7 @@ public class MenuPane extends Component {
 
 		@Override
 		public GameAction keyAction() {
-			return SPDAction.MENU;
+			return GameAction.BACK;
 		}
 
 		@Override

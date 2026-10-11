@@ -1,8 +1,25 @@
 #!/usr/bin/env python3
 """Apply narrowly scoped backend changes to the pinned upstream checkout."""
 from pathlib import Path
-import sys
+import sys, subprocess, hashlib
 root=Path(sys.argv[1])
+# Preserve the controller fork as an explicit, reviewable patch over official 4.0.2.
+base_patch=Path(__file__).with_name('controller-base.patch').resolve()
+stamp=root/'.nextui-controller-base'
+digest=hashlib.sha256(base_patch.read_bytes()).hexdigest()
+if not stamp.exists():
+    subprocess.run(['patch','-p1','--batch','--forward','-i',str(base_patch)],cwd=root,check=True)
+    stamp.write_text(digest+'\n')
+elif stamp.read_text().strip()!=digest:
+    raise RuntimeError('Controller base changed; rebuild from a fresh build source directory')
+# 3.3.8 floor saves predate the optional custom-terrain tile layer.
+p=root/'core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java'
+s=p.read_text()
+if 'nextui-legacy-terrain' not in s:
+    old='collection = bundle.getCollection( CUSTOM_TERRAIN );'
+    assert old in s
+    s=s.replace(old,'collection = bundle.contains(CUSTOM_TERRAIN) ? bundle.getCollection(CUSTOM_TERRAIN) : new java.util.ArrayList<>(); // nextui-legacy-terrain',1)
+    p.write_text(s)
 # UI callbacks can enqueue a hover event while pointer events are dispatched.
 # Drain a snapshot, preserving newly queued events for the following frame.
 p=root/'SPD-classes/src/main/java/com/watabou/input/PointerEvent.java'
@@ -61,8 +78,9 @@ if 'nextui-resume-welcome' not in s:
     marker='if (ShatteredPixelDungeon.versionCode == previousVersion && !SPDSettings.intro()) {'
     s=s.replace(marker, '''// nextui-resume-welcome: unfinished intro must not force another new hero.
         // Keep intro enabled until the saved run completes its own reader flow.
-        if (Boolean.getBoolean("nextui.sdl") && ShatteredPixelDungeon.versionCode == previousVersion
+        if (Boolean.getBoolean("nextui.sdl") && previousVersion > 0
                 && SPDSettings.intro() && !GamesInProgress.checkAll().isEmpty()) {
+            if (ShatteredPixelDungeon.versionCode != previousVersion) updateVersion(previousVersion);
             ShatteredPixelDungeon.switchNoFade(TitleScene.class);
             return;
         }
@@ -232,12 +250,12 @@ p.write_text(s)
 for relative, values in {
     'scenes/scenes_zh.properties': {
         'scenes.gamescene.tutorial_move_controller': '使用十字键移动并与相邻目标互动。',
-        'scenes.gamescene.tutorial_guidebook_mobile': '按Start，选择教程与日志，再按A阅读新书页。',
+        'scenes.gamescene.tutorial_guidebook_mobile': '按Start，选择日志与图鉴，再按A阅读新书页。',
         'scenes.gamescene.tutorial_ui_mobile': 'B查看目标，X背包，Y使用快捷栏；L1向左、R1向右。Start菜单有按键说明；A拾取脚下物品，Menu等待。'},
-    'items/items_zh.properties': {'items.journal.guidebook.hint_mobile':'按Start，选择教程与日志，再按A阅读新书页。'},
-    'journal/journal_zh.properties': {'journal.document.adventurers_guide.intro.body':'你好冒险家，你正在阅读《地牢探索指南》！本指南会在合适时机提示你阅读新的教程。\\n\\n右上角书本闪烁时，按Start选择“教程与日志”，用十字键选择金色的新书页，再按A阅读。正文上下滚动，A或B返回。\\n\\n指南遗失了部分书页，继续探索地牢，寻找其余部分吧！',
+    'items/items_zh.properties': {'items.journal.guidebook.hint_mobile':'按Start，选择日志与图鉴，再按A阅读新书页。'},
+    'journal/journal_zh.properties': {'journal.document.adventurers_guide.intro.body':'你好冒险家，你正在阅读《地牢探索指南》！本指南会在合适时机提示你阅读新的教程。\\n\\n右上角书本闪烁时，按Start选择“日志与图鉴”，用十字键选择金色的新书页，再按A阅读。正文上下滚动，A或B返回。\\n\\n指南遗失了部分书页，继续探索地牢，寻找其余部分吧！',
         'journal.document.adventurers_guide.examining.body':'行动前，先观察敌人、物品和地形，可以避免许多危险。\\n\\n正常游戏时按B进入查看模式，十字键选择目标格，A查看，B取消。查看本身不消耗回合。\\n\\nSelect可查看英雄、天赋和当前状态。',
-        'journal.document.adventurers_guide.searching.body':'地牢中存在看不见的暗门和陷阱。怀疑附近有隐藏通道时，可以花费回合搜索周围。\\n\\n按Start，选择“搜索周围”并按A。也可以用L1/R1选中放大镜，连续使用Y进行搜索。查看目标与搜索周围是两种不同操作。'},
+        'journal.document.adventurers_guide.searching.body':'地牢中存在看不见的暗门和陷阱。怀疑附近有隐藏通道时，可以花费回合搜索周围。\\n\\n正常探索时长按B至少半秒后松开，搜索周围；也可按Start选择“搜索周围”并按A。搜索消耗回合。查看目标与搜索周围是两种不同操作。'},
     'windows/windows_zh.properties': {'windows.wndkeybindings.controller_info':'十字键移动与选择，A确定，B返回。A拾取脚下物品，Menu等待；L2/R2缩放。'},
     'scenes/scenes.properties': {'scenes.gamescene.tutorial_move_controller':'Use the D-pad to move and interact with adjacent objects.'},
 }.items():

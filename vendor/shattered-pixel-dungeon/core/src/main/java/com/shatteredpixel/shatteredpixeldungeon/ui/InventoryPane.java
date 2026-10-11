@@ -43,17 +43,16 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.GameAction;
-import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
@@ -62,14 +61,11 @@ import java.util.ArrayList;
 public class InventoryPane extends Component {
 
 	private NinePatch bg;
-	private NinePatch bg2; //2 backgrounds to reduce transparency
 
 	//used to prevent clicks through the BG normally, or to cancel selectors if they're enabled
 	private PointerArea blocker;
 
 	private Signal.Listener<KeyEvent> keyBlocker;
-	private Signal.Listener<KeyEvent> navigationListener;
-	private ControllerNavigator controllerNavigator = new ControllerNavigator();
 
 	private static InventoryPane instance;
 
@@ -111,7 +107,6 @@ public class InventoryPane extends Component {
 	@Override
 	public synchronized void destroy() {
 		KeyEvent.removeKeyListener(keyBlocker);
-		KeyEvent.removeKeyListener(navigationListener);
 		super.destroy();
 		if (instance == this) instance = null;
 	}
@@ -145,11 +140,7 @@ public class InventoryPane extends Component {
 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_2
 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_3
 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_4
-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_5
-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.N
-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.S
-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.W
-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.E){
+						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_5){
 					//any windows opened as a consequence of this should be centered on the inventory
 					GameScene.centerNextWndOnInvPane();
 					selector.onSelect(null);
@@ -160,20 +151,6 @@ public class InventoryPane extends Component {
 				return false;
 			}
 		};
-
-		navigationListener = new Signal.Listener<KeyEvent>() {
-			@Override
-			public boolean onSignal(KeyEvent event) {
-				if (InventoryPane.this.visible && !GameScene.showingWindow() && !GameScene.selectingCell()
-						&& KeyBindings.getActionForKey(event) == SPDAction.ACCEPT) {
-					Game.inputHandler.emulateTouch(ControllerHandler.CONTROLLER_POINTER_ID, PointerEvent.LEFT, event.pressed);
-					return true;
-				}
-				return event.pressed && InventoryPane.this.visible && !GameScene.showingWindow()
-						&& controllerNavigator.move(InventoryPane.this, KeyBindings.getActionForKey(event));
-			}
-		};
-		KeyEvent.addKeyListener(navigationListener);
 
 		equipped = new ArrayList<>();
 		for (int i = 0; i < 5; i++){
@@ -586,6 +563,7 @@ public class InventoryPane extends Component {
 			}
 
 			if (selector == null && item.defaultAction() != null){
+				GameScene.centerNextWndOnInvPane();
 				item.execute(Dungeon.hero);
 				if (item != null && item.usesTargeting) {
 					targetingSlot = this;
@@ -620,6 +598,8 @@ public class InventoryPane extends Component {
 				PointF mousePos = PointerEvent.currentHoverPos();
 				mousePos = camera.screenToCamera((int)mousePos.x, (int)mousePos.y);
 				r.setPos(mousePos.x-3, mousePos.y-3);
+				r.setChildWindowOffset(new Point((int)centerX() - camera().width/2,
+						(int)centerY() - camera().height/2));
 			} else {
 				//do nothing
 			}
