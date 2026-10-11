@@ -10,6 +10,52 @@ def apply(root):
    n=fn(s);assert n!=s,rel
    p.write_text(n)
  shutil.copyfile(Path(__file__).parent/'source-overrides/ControllerNavigator.java',base/'ui/ControllerNavigator.java')
+ patch('scenes/AlchemyScene.java','nextui-alchemy-controls',lambda s:s.replace('private IconButton cancel;','''// nextui-alchemy-controls: the standalone scene needs its own focus owner.
+    private final com.shatteredpixel.shatteredpixeldungeon.ui.ControllerNavigator rgNavigator=new com.shatteredpixel.shatteredpixeldungeon.ui.ControllerNavigator();
+    private boolean rgInitialized,rgCovered;
+    public Component rgFocused(){return rgNavigator.focused();}
+    public String rgFocusId(){
+        Component f=rgNavigator.focused();
+        for(int i=0;i<inputs.length;i++)if(inputs[i]!=null && f==inputs[i].slot)return "input"+i;
+        for(int i=0;i<combines.length;i++)if(combines[i]!=null && f==combines[i].button)return "combine"+i;
+        for(int i=0;i<outputs.length;i++)if(outputs[i]!=null && f==outputs[i].slot)return "output"+i;
+        if(f==cancel)return "clear";if(f==repeat)return "repeat";if(f==energyAdd)return "energy";
+        if(f instanceof ExitButton)return "exit";return f instanceof StyledButton?"guide":"";
+    }
+    public boolean rgInput(int key,boolean down){
+        if(Window.rgTop()!=null)return false;
+        com.watabou.input.GameAction action=KeyBindings.getActionForKey(new com.watabou.input.KeyEvent(key,down));
+        if(action==SPDAction.ACCEPT || key==com.badlogic.gdx.Input.Keys.BUTTON_Y){
+            if(rgNavigator.ensureFocus(this))rgNavigator.accept(down);return true;
+        }
+        if(action==SPDAction.N || action==SPDAction.S || action==SPDAction.E || action==SPDAction.W){
+            if(down)rgNavigator.move(this,action);return true;
+        }
+        if(key==com.badlogic.gdx.Input.Keys.BUTTON_L1 || key==com.badlogic.gdx.Input.Keys.BUTTON_R1){
+            if(down)rgNavigator.cycle(this,key==com.badlogic.gdx.Input.Keys.BUTTON_L1?-1:1);return true;
+        }
+        if(key==com.badlogic.gdx.Input.Keys.BUTTON_B){if(down)onBackPressed();return true;}
+        if(key==com.badlogic.gdx.Input.Keys.BUTTON_X){
+            if(down){
+                boolean empty=false;for(InputButton b:inputs)if(b.item()==null)empty=true;
+                if(empty)addToFront(WndBag.getBag(itemSelector));
+                else addToFront(new WndMessage(org.nextui.shattered.RgPlatform.chinese()?"材料槽已满，请先选择一个材料槽更换。":"All material slots are full. Select a slot to replace it."));
+            }return true;
+        }
+        return false;
+    }
+    private void rgUpdateFocus(){
+        if(!Boolean.getBoolean("nextui.sdl"))return;
+        boolean covered=Window.rgTop()!=null;
+        if(!covered){
+            if(inputs[0]!=null && (!rgInitialized || rgNavigator.focused()==null || !rgNavigator.focused().isActive() || !rgNavigator.focused().isVisible())){rgNavigator.focus(inputs[0].slot);rgInitialized=true;}
+            rgNavigator.ensureFocus(this);if(rgCovered)rgNavigator.revealFocus();
+        }
+        rgCovered=covered;
+    }
+    @Override public synchronized void draw(){super.draw();if(Boolean.getBoolean("nextui.sdl") && Window.rgTop()==null)rgNavigator.draw();}
+    private IconButton cancel;''',1).replace('desc.text( Messages.get(AlchemyScene.class, "text") );','desc.text(Boolean.getBoolean("nextui.sdl")?(org.nextui.shattered.RgPlatform.chinese()?"方向选择 · A确定 · X材料 · B返回":"D-pad select · A use · X items · B back"):Messages.get(AlchemyScene.class,"text"));',1).replace('water.offset( 0, -5 * Game.elapsed );','water.offset( 0, -5 * Game.elapsed );\n        rgUpdateFocus();',1).replace('public void destroy() {','public void destroy() {\n        rgNavigator.destroy();',1))
+ patch('scenes/PixelScene.java','nextui-alchemy-cursor',lambda s:s.replace('public boolean shouldDrawControllerCursor() {','public boolean shouldDrawControllerCursor() {\n        if(Boolean.getBoolean("nextui.sdl") && this instanceof AlchemyScene)return false; // nextui-alchemy-cursor',1))
  patch('windows/WndHero.java','implements org.nextui.shattered.RgFocusable',lambda s:s.replace('class BuffSlot extends Component {','class BuffSlot extends Component implements org.nextui.shattered.RgFocusable {'))
  patch('ui/BadgesList.java','implements org.nextui.shattered.RgFocusable',lambda s:s.replace('class ListItem extends Component {','class ListItem extends Component implements org.nextui.shattered.RgFocusable {'))
  patch('ui/Window.java','nextui-modal-focus',lambda s:s.replace('controllerNavigator.clear();','controllerNavigator.destroy();',1).replace('public void onBackPressed() {','''// nextui-modal-focus: initialize after subclass layout and restore when exposed.

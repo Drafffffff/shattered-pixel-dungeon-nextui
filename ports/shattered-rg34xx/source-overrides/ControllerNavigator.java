@@ -17,6 +17,8 @@ public class ControllerNavigator {
  private Component accepted;
  private final ColorBlock[] edges=new ColorBlock[4];
  public Component focused(){return focused;}
+ public void focus(Component component){clear();focused=component;if(component!=null)movePointer(component);}
+ public void cycle(Group root,int direction){ArrayList<Component> controls=new ArrayList<>();collect(root,controls);if(!controls.isEmpty())focus(controls.get(Math.floorMod(controls.indexOf(focused)+direction,controls.size())));}
  public void clear(){focused=null;down=false;accepted=null;}
  public void destroy(){clear();for(ColorBlock edge:edges)if(edge!=null)edge.destroy();}
  public boolean ensureFocus(Group root){

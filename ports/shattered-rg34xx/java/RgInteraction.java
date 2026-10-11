@@ -9,6 +9,8 @@ public final class RgInteraction {
  public static boolean handle(int key,boolean down){
   if(System.getProperty("nextui.commands")!=null && key==Keys.BUTTON_A && down)System.err.println("Interact dispatch: scene="+Game.scene().getClass().getSimpleName()+" window="+GameScene.showingWindow()+" selecting="+GameScene.selectingCell());
   if(RgMap.input(key,down))return true;
+  if(Game.scene() instanceof com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene)
+   return ((com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene)Game.scene()).rgInput(key,down);
   if(!(Game.scene() instanceof GameScene) || GameScene.showingWindow() || Dungeon.hero==null || !Dungeon.hero.isAlive())return false;
   if(GameScene.selectingCell()){
    if(key==Keys.BUTTON_A || key==Keys.BUTTON_Y){if(down)GameScene.rgConfirmTarget();return true;}

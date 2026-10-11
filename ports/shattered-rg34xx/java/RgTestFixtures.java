@@ -55,6 +55,12 @@ public final class RgTestFixtures {
    case "upgrade":GameScene.show(new WndUpgrade(new com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade(),Dungeon.hero.belongings.weapon(),false));break;
    case "descend":InterlevelScene.curTransition=Dungeon.level.getTransition(com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition.Type.REGULAR_EXIT);InterlevelScene.mode=InterlevelScene.Mode.DESCEND;ShatteredPixelDungeon.switchNoFade(InterlevelScene.class);break;
    case "reload":try{Dungeon.saveAll();InterlevelScene.mode=InterlevelScene.Mode.CONTINUE;ShatteredPixelDungeon.switchNoFade(InterlevelScene.class);}catch(Exception e){throw new RuntimeException(e);}break;
+   case "alchemy-supplies":
+    Dungeon.hero.belongings.backpack.items.clear();
+    new com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat().quantity(5).collect();
+    new com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing().identify().collect();
+    com.shatteredpixel.shatteredpixeldungeon.journal.Document.ALCHEMY_GUIDE.findPage(2);
+    Dungeon.energy=5;break;
    case "alchemy":ShatteredPixelDungeon.switchNoFade(AlchemyScene.class);break;
    default:throw new IllegalArgumentException(name);
   }

@@ -2,7 +2,7 @@
 
 **中文玩家从这里开始：[中文安装与上手教程](docs/INSTALL-ZH.md)** — 下载哪个文件、放到 SD 卡哪里、如何启动和更新，按步骤照做即可。
 
-**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.4/Shattered-Pixel-Dungeon-v4.0.2-nextui.4-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
+**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.5/Shattered-Pixel-Dungeon-v4.0.2-nextui.5-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
 
 Unofficial, open-source RG34XX adaptation of Shattered Pixel Dungeon **4.0.2**. Designed for the ordinary RG34XX: H700, 720×480, 1 GB RAM, D-pad and buttons, no analog sticks. 简体中文默认开启。
 
@@ -56,6 +56,8 @@ During inspect and item targeting, moving the reticle toward the play area edges
 
 Full map opens at floor overview, hides HUD and highlights the hero in cyan. An independent white crosshair selects a region with D-pad movement (hold to repeat); A zooms into that region. B returns from detail to overview while retaining the cursor, then B again exits. It retains fog of war and consumes no turns. Closing it restores the prior camera. Six quickslots support replacement and clearing; selected slot, including an empty slot, survives stairs and save/reload. Journal opens directly and remembers tabs, selection and scroll. Windows use border focus and move focus into new dialogs. Transition scenes hide the pointer.
 
+Alchemy has its own focus border: D-pad selects controls, A/Y activates, X adds materials, L1/R1 cycles controls, B returns and refunds unspent ingredients. Material slots, crafting, output previews, repeat, clear, energy conversion and the guide are accessible.
+
 Home retains the original background and three compact entries. Saves can be deleted with a confirmation defaulting to cancel. Tutorial reminders appear once per page; game progression and unread pages retain upstream rules. Strength increases through strength potions, not ordinary character levels. Equipment descriptions clarify known strength requirements without identifying hidden stats.
 
 ## Build / 构建
@@ -78,7 +80,7 @@ For SSH installation after building, with the game saved and exited:
 
 Installer stages a new program directory, keeps the previous version at `.ports/shattered-rg34xx.previous`, preserves saves and artwork, and removes the obsolete duplicate launcher. It never stops NextUI. Do not send signals to `nextui.elf`: on this device that can shut the machine down.
 
-For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.4` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
+For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.5` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
 
 ## Rendering, memory and verification
 
@@ -96,6 +98,7 @@ ARM64/Mesa real-rendering regression covers onboarding/recovery, inspect/search 
 docker build -t shattered-rg34xx-smoke:local -f ports/shattered-rg34xx/Dockerfile.smoke .
 python3 ports/shattered-rg34xx/interaction-test.py --resume-from /path/to/save-copy
 python3 ports/shattered-rg34xx/hotbar-memory-test.py --resume-from /path/to/save-copy
+python3 ports/shattered-rg34xx/interaction-test.py --alchemy-only --resume-from /path/to/save-copy
 python3 ports/shattered-rg34xx/migration-test.py --resume-from /path/to/3.3.8-save-copy
 ./ports/shattered-rg34xx/signal-test.sh
 ```

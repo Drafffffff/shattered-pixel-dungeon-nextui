@@ -213,7 +213,16 @@ public final class RgLauncher {
   state.put("cameraWorldWidth",com.watabou.noosa.Camera.main.width);state.put("cameraWorldHeight",com.watabou.noosa.Camera.main.height);
   state.put("mapWidth",Dungeon.level==null?0:Dungeon.level.width()*16);state.put("mapHeight",Dungeon.level==null?0:Dungeon.level.height()*16);
   com.shatteredpixel.shatteredpixeldungeon.ui.Window top=com.shatteredpixel.shatteredpixeldungeon.ui.Window.rgTop();
-  com.watabou.noosa.ui.Component focus=top==null?null:top.rgFocused();
+  com.watabou.noosa.ui.Component focus=top==null?(Game.scene() instanceof com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene?((com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene)Game.scene()).rgFocused():null):top.rgFocused();
+  state.put("focusItem",focus instanceof com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot && ((com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot)focus).item()!=null?((com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot)focus).item().getClass().getSimpleName():"");
+  state.put("energy",Dungeon.energy);state.put("itemsCrafted",Statistics.itemsCrafted);
+  if(Game.scene() instanceof com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene){
+   state.put("alchemyFocus",((com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene)Game.scene()).rgFocusId());
+   java.lang.reflect.Field field=Game.scene().getClass().getDeclaredField("inputs");field.setAccessible(true);Object[] inputs=(Object[])field.get(null);String materials="";
+   for(Object input:inputs){java.lang.reflect.Method method=input.getClass().getDeclaredMethod("item");method.setAccessible(true);com.shatteredpixel.shatteredpixeldungeon.items.Item item=(com.shatteredpixel.shatteredpixeldungeon.items.Item)method.invoke(input);materials+=(item==null?"empty":item.getClass().getSimpleName()+":"+item.quantity())+";";}
+   state.put("alchemyMaterials",materials);
+  }
+  if(Dungeon.hero!=null){String inventory="";for(com.shatteredpixel.shatteredpixeldungeon.items.Item item:Dungeon.hero.belongings.backpack.items)inventory+=item.getClass().getSimpleName()+":"+item.quantity()+";";state.put("inventoryItems",inventory);}
   state.put("focusType",focus==null?"":focus.getClass().getName());
   if(focus!=null){com.watabou.utils.Point point=focus.camera().cameraToScreen(focus.centerX(),focus.centerY());state.put("focusScreenX",point.x);state.put("focusScreenY",point.y);}
   com.shatteredpixel.shatteredpixeldungeon.ui.Window topWindow=com.shatteredpixel.shatteredpixeldungeon.ui.Window.rgTop();
