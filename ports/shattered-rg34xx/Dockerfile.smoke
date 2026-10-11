@@ -1,0 +1,3 @@
+FROM eclipse-temurin@sha256:5d6042fb8cdc14d614e4e421f52e3211fc5aeadddce44cbf9de8ed37c791f824
+RUN apt-get update && apt-get install -y --no-install-recommends libsdl2-2.0-0 libgles2 libegl1-mesa-dev libgl1-mesa-dri xvfb xauth libasound2t64 && rm -rf /var/lib/apt/lists/*
+ENV SDL_VIDEODRIVER=x11 LIBGL_ALWAYS_SOFTWARE=1 ALSOFT_DRIVERS=null

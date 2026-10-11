@@ -1,0 +1,122 @@
+[
+  {
+    "file": "libgdx-1.14.0.tar.gz",
+    "url": "https://codeload.github.com/libgdx/libgdx/tar.gz/refs/tags/1.14.0",
+    "sha256": "65092922b267d664fa346a52de8832d7076cf52c2e689f6f7994a3a6c612ed76"
+  },
+  {
+    "file": "lwjgl-3.3.3.tar.gz",
+    "url": "https://codeload.github.com/LWJGL/lwjgl3/tar.gz/refs/tags/3.3.3",
+    "sha256": "381a386688a5f5109a0edf2395adfee3cc62031929bf0ddbbd39fd356f647447"
+  },
+  {
+    "file": "openal-soft-1.23.1.tar.gz",
+    "url": "https://codeload.github.com/kcat/openal-soft/tar.gz/refs/tags/1.23.1",
+    "sha256": "dfddf3a1f61059853c625b7bb03de8433b455f2f79f89548cbcbd5edca3d4a4a"
+  },
+  {
+    "file": "JSON-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/stleary/JSON-java/20240303/LICENSE",
+    "sha256": "86cc84f1773e3318ba26fd61b3ae508a167df38b361695e105f6e499e7a2736f"
+  },
+  {
+    "file": "LGPL-2.0.txt",
+    "url": "https://raw.githubusercontent.com/kcat/openal-soft/1.23.1/COPYING",
+    "sha256": "d808ce217e5b611854da622b57ec29fe545584c48bc5352fae72a4b6e5074a15"
+  },
+  {
+    "file": "APACHE-2.0.txt",
+    "url": "https://raw.githubusercontent.com/libgdx/libgdx/1.14.0/LICENSE",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+  },
+  {
+    "file": "LWJGL-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/LWJGL/lwjgl3/3.3.3/LICENSE.md",
+    "sha256": "4c2f770897d0cfda4d9a65bb4d6d6983dccfd57d4c7eb74ea5ded0762cbc0e75"
+  },
+  {
+    "file": "freetype-2.13.3.tar.gz",
+    "url": "https://codeload.github.com/freetype/freetype/tar.gz/refs/tags/VER-2-13-3",
+    "sha256": "bc5c898e4756d373e0d991bab053036c5eb2aa7c0d5c67e8662ddc6da40c4103"
+  },
+  {
+    "file": "gdx-1.14.0-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/gdx/gdx/1.14.0/gdx-1.14.0-sources.jar",
+    "sha256": "3e471242fe6082140bc9e268f9a2b9500497889da6715292f5cabdf81ab323ec"
+  },
+  {
+    "file": "gdx-backend-headless-1.14.0-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/gdx/gdx-backend-headless/1.14.0/gdx-backend-headless-1.14.0-sources.jar",
+    "sha256": "7317ba6fded2b0b0476c9bbc9e175eb6214b83c233382f86cbe8fb8c958875eb"
+  },
+  {
+    "file": "gdx-backend-lwjgl3-1.14.0-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/gdx/gdx-backend-lwjgl3/1.14.0/gdx-backend-lwjgl3-1.14.0-sources.jar",
+    "sha256": "05c31855f7e7f2bb94859b3458f75bdb4ebba9301b89d1b5946d9371938e20ec"
+  },
+  {
+    "file": "gdx-controllers-core-2.2.4-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/gdx-controllers/gdx-controllers-core/2.2.4/gdx-controllers-core-2.2.4-sources.jar",
+    "sha256": "d4a1c7b2f4984cf2731e3717be38f946de336405874a7058cc6079c3c6594aef"
+  },
+  {
+    "file": "gdx-freetype-1.14.0-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/gdx/gdx-freetype/1.14.0/gdx-freetype-1.14.0-sources.jar",
+    "sha256": "108f59f4f8aaf002631aef4492da63b48b3b34748837f482282b46762c1ff1e2"
+  },
+  {
+    "file": "gdx-jnigen-loader-2.5.2-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/gdx/gdx-jnigen-loader/2.5.2/gdx-jnigen-loader-2.5.2-sources.jar",
+    "sha256": "81245d09d996335a2a1cf66c2c055b8dea776fc6bb3af87da5c2af61300e5fd9"
+  },
+  {
+    "file": "jlayer-1.0.1-gdx-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/badlogicgames/jlayer/jlayer/1.0.1-gdx/jlayer-1.0.1-gdx-sources.jar",
+    "sha256": "373d47632af7c1cfb16563c3d69774b155e10a73d036f6eca99bd979ecb12329"
+  },
+  {
+    "file": "jorbis-0.0.17-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jcraft/jorbis/0.0.17/jorbis-0.0.17-sources.jar",
+    "sha256": "1643dd368b9c160276caf8d1f6a8c0aae43ca5bf49b53348a2a01623641708e5"
+  },
+  {
+    "file": "json-20240303-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303-sources.jar",
+    "sha256": "3078d4471e3be3dcbd07b3cf1cf0b610158d4605c1151c3dbf27a248c9aa04cc"
+  },
+  {
+    "file": "lwjgl-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-sources.jar",
+    "sha256": "42e532b4e1739218da4560cdd0bff5217c8adefa732948f0976e2688cebcc226"
+  },
+  {
+    "file": "lwjgl-glfw-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-sources.jar",
+    "sha256": "6246f4cae8145c284c33f6dfc1a804ebfb40a52c3a87c780dec472805ec0d349"
+  },
+  {
+    "file": "lwjgl-openal-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-sources.jar",
+    "sha256": "3d91c1659e2d030449f61de7e0797bebe2b04513d32890294a073084fb545077"
+  },
+  {
+    "file": "lwjgl-opengl-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-sources.jar",
+    "sha256": "f57fbae2e2e8159fafb2506b3d9f60e2a4a0706088899bb01f0721393bf5f15d"
+  },
+  {
+    "file": "lwjgl-opengles-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-opengles/3.3.3/lwjgl-opengles-3.3.3-sources.jar",
+    "sha256": "a5a930365ccc5c89ed17dbfed328cb174f2ef696f9427274e806ead1a928c2d2"
+  },
+  {
+    "file": "lwjgl-stb-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-sources.jar",
+    "sha256": "578be191a8a4dd270b4d53d7e8486d71628124b7332e873612b3e252d0a0983f"
+  },
+  {
+    "file": "lwjgl-egl-3.3.3-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-egl/3.3.3/lwjgl-egl-3.3.3-sources.jar",
+    "sha256": "1c07aa306f404f0a21a88ee6fd125df03246db9cf72937fdeff9862f8b499957"
+  }
+]
