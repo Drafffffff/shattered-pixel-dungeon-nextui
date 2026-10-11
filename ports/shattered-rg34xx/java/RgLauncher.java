@@ -29,6 +29,7 @@ public final class RgLauncher {
   private String content=""; public String getContents(){return content;} public void setContents(String s){content=s==null?"":s;} public boolean hasContents(){return !content.isEmpty();}
  };
  private static long selectPressed;
+ private static com.watabou.noosa.Scene selectMapOwner;
  private static final Set<Integer> held=new HashSet<>();
  private static final Set<Integer> suppressedModifiers=new HashSet<>();
  private static final java.util.List<LifecycleListener> listeners=new ArrayList<>();
@@ -110,6 +111,7 @@ public final class RgLauncher {
      }
      java.nio.file.Files.deleteIfExists(Paths.get(commands));
     }
+    updateHeldShortcuts();
     Runnable r;while((r=queue.poll())!=null)r.run();
     graphics.updateTime();graphics.incrementFrameId(); audio.update();game.render();
     String scene=Game.scene()==null?"loading":Game.scene().getClass().getSimpleName();
@@ -127,8 +129,12 @@ public final class RgLauncher {
  }
  private static void input(int event) {
   int k=Math.abs(event);boolean down=event>0;
+  if(!down && k==Input.Keys.BUTTON_SELECT)updateHeldShortcuts();
+  boolean firstDown=down && !held.contains(k);
   if(down)held.add(k);else held.remove(k);
-  if(k==Input.Keys.BUTTON_SELECT && down)selectPressed=System.nanoTime();
+  if(k==Input.Keys.BUTTON_SELECT && firstDown){
+   selectPressed=System.nanoTime();selectMapOwner=canHoldMap()?Game.scene():null;
+  }
   if(k==20001 || k==20002) {
    if(down) {
     boolean menu=held.contains(Input.Keys.BUTTON_THUMBL),select=held.contains(Input.Keys.BUTTON_SELECT);
@@ -140,22 +146,36 @@ public final class RgLauncher {
   }
   if(held.contains(Input.Keys.BUTTON_SELECT)&&held.contains(Input.Keys.BUTTON_START)){running=false;return;}
   ControllerHandler.controllerActive=true;
-  // Delay system modifiers until release: brightness/color adjustments must
+  // Delay short modifier actions until release: brightness/color adjustments must
   // not also spend a turn or open the hero window.
   if(k==Input.Keys.BUTTON_THUMBL || k==Input.Keys.BUTTON_SELECT) {
    if(!down && !suppressedModifiers.remove(k)) {
-    if(k==Input.Keys.BUTTON_SELECT && System.nanoTime()-selectPressed>550000000L
-        && Game.scene() instanceof com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene
-        && !com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene.showingWindow()) {
-      if(RgMap.active())RgMap.close();else RgMap.open();
-     } else if(!RgInteraction.handle(k,true)) {
+    if(!RgInteraction.handle(k,true)) {
       KeyEvent.addKeyEvent(new KeyEvent(k,true));KeyEvent.addKeyEvent(new KeyEvent(k,false));
      }
    }
+   if(!down && k==Input.Keys.BUTTON_SELECT)selectMapOwner=null;
    return;
   }
   if(RgSearchShortcut.input(k,down))return;
   if(!RgInteraction.handle(k,down))KeyEvent.addKeyEvent(new KeyEvent(k,down));
+ }
+ private static boolean canHoldMap(){
+  return Game.scene() instanceof com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene
+   && !com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene.showingWindow()
+   && !com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene.selectingCell()
+   && Dungeon.hero!=null && Dungeon.hero.isAlive();
+ }
+ private static void updateHeldShortcuts(){
+  RgSearchShortcut.update();
+  if(selectMapOwner==null || !held.contains(Input.Keys.BUTTON_SELECT))return;
+  if(Game.scene()!=selectMapOwner || !canHoldMap() || suppressedModifiers.contains(Input.Keys.BUTTON_SELECT)){
+   selectMapOwner=null;return;
+  }
+  if(System.nanoTime()-selectPressed>=550000000L){
+   selectMapOwner=null;suppressedModifiers.add(Input.Keys.BUTTON_SELECT);
+   if(RgMap.active())RgMap.close();else RgMap.open();
+  }
  }
  private static long rssKiB() {
   try {for(String line:java.nio.file.Files.readAllLines(Paths.get("/proc/self/status")))if(line.startsWith("VmRSS:"))return Long.parseLong(line.trim().split("\\s+")[1]);}catch(Exception ignored){}

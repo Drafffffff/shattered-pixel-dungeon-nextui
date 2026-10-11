@@ -92,7 +92,10 @@ try:
  send('key 97');send('key 100');detail=state('y-examine');assert detail['windowCount']>0 and not detail['cursor'],detail
  shot('examine-border');send('key 97');assert state('inspect-return')['turn']==before['turn']
  # Long B searches exactly once; it must never enter examine targeting.
- origin=state('search-before');send('down 97',.8);send('up 97',.8);searched=state('search-after')
+ origin=state('search-before');send('down 97',.8);searched=state('search-while-held')
+ assert searched['turn']>origin['turn'] and not searched['targeting'],(origin,searched)
+ time.sleep(.7);assert state('search-still-held')['turn']==searched['turn']
+ send('up 97',.8);assert state('search-after-release')['turn']==searched['turn']
  assert searched['turn']>origin['turn'] and searched['windowCount']==0 and not searched['targeting'],(origin,searched)
  stable=state('search-stable');assert stable['turn']==searched['turn']
  # B pressed in a menu is only Back, even if held.
@@ -101,12 +104,18 @@ try:
  send('down 97');send('key 108');send('up 97');assert state('interrupted-b')['windowCount']==1;send('key 97')
  before=state('after-search')
  # Full-screen camera mode owns all input, including the quickslot button.
- send('down 109',.65);send('up 109');m=state('map-open');assert m['mapMode'] and not m['uiVisible'],m
+ send('down 109',.65);m=state('map-while-held');assert m['mapMode'] and not m['uiVisible'],m
+ time.sleep(.7);assert state('map-still-held')['mapMode']
+ send('up 109');assert state('map-after-release')['mapMode']
  assert m['cameraX']<=0 and m['cameraY']<=0 and m['cameraX']+m['cameraWorldWidth']>=m['mapWidth'] and m['cameraY']+m['cameraWorldHeight']>=m['mapHeight'],m;shot('map-overview')
  send('key 1022');pan=state('map-pan');assert pan['cameraX']!=m['cameraX'] and pan['pos']==before['pos'],pan
  send('key 100');assert state('map-y')['windowCount']==0
  send('key 105');assert state('map-zoom')['cameraZoom']>m['cameraZoom'];send('key 104');assert abs(state('map-zoom-out')['cameraZoom']-m['cameraZoom'])<.001;send('key 96');assert state('map-center')['mapMode']
  shot('map-fullscreen');send('key 97');m=state('map-closed');assert not m['mapMode'] and m['uiVisible'] and m['turn']==before['turn'] and m['cameraZoom']==before['cameraZoom'],m
+ # Long Select can also close the map before release, without opening hero info.
+ send('down 109',.7);assert state('map-reopen-held')['mapMode'];send('up 109')
+ send('down 109',.7);closed=state('map-close-held');assert not closed['mapMode'] and closed['windowCount']==0
+ send('up 109');assert state('map-close-release')['windowCount']==0
  # Item targeting can be cancelled without consuming the quickslot.
  targetBefore=state('throw-before');send('key 100');assert state('throw-target')['targeting'];send('key 97');assert state('throw-cancel')['turn']==targetBefore['turn']
  # Buff rows are independently focusable and open their original effect window.
@@ -137,7 +146,7 @@ try:
  send('key 99');send('key 96');send('key 100');assert state('keyboard-done')['inputText']=='ORIGINAL1';send('key 97')
  # System modifiers never cause world actions or modal changes.
  origin=state('system-before');send('down 106');send('key 20001');hardware[1]=6;settingsFile.write_bytes(struct.pack('<16i',*hardware));send('up 106');osd=state('brightness');assert osd['turn']==origin['turn'] and osd['windowCount']==0 and '6 / 10' in osd['overlay'];shot('system-osd')
- send('down 109');send('key 20001');hardware[2]=21;settingsFile.write_bytes(struct.pack('<16i',*hardware));send('up 109');assert state('color')['windowCount']==0
+ send('down 109');send('key 20001');hardware[2]=21;settingsFile.write_bytes(struct.pack('<16i',*hardware));time.sleep(.8);assert not state('color-held')['mapMode'];send('up 109');assert state('color')['windowCount']==0
  # Shoulder order follows actual screen coordinates, including flipped layout.
  hot=state('hotbar-order');positions={int(k):float(v) for k,v in (entry.split(':') for entry in hot['hotbarPositions'].strip(',').split(','))};order=sorted(positions,key=positions.get);idx=order.index(hot['hotbar']);send('key 102');assert state('left-slot')['hotbar']==order[(idx-1)%len(order)];send('key 103');assert state('return-slot')['hotbar']==hot['hotbar']
  # The full crafting scene preserves material selection and cancellation.

@@ -10,10 +10,10 @@
 
 | 要下载的文件 | 点击下载 | 用途 |
 | --- | --- | --- |
-| `Shattered-Pixel-Dungeon-v4.0.2-nextui.1-RG34XX.zip`（约 40 MB） | **[下载游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.1/Shattered-Pixel-Dungeon-v4.0.2-nextui.1-RG34XX.zip)** | 必下，解压后复制游戏文件 |
+| `Shattered-Pixel-Dungeon-v4.0.2-nextui.2-RG34XX.zip`（约 40 MB） | **[下载游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.2/Shattered-Pixel-Dungeon-v4.0.2-nextui.2-RG34XX.zip)** | 必下，解压后复制游戏文件 |
 | `zulu17.54.21-ca-jre17.0.13-linux.squashfs`（约 45 MB） | **[下载 Java 运行库](https://github.com/PortsMaster/PortMaster-New/releases/download/2025-01-20_2237/zulu17.54.21-ca-jre17.0.13-linux.squashfs)** | SD 卡里没有同名文件时下载；保持原样，不解压 |
 
-游戏直链对应目前的 `v4.0.2-nextui.1`。以后更新时，打开[最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)，选择文件名以 **`-RG34XX.zip`** 结尾的附件。
+游戏直链对应目前的 `v4.0.2-nextui.2`。以后更新时，打开[最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)，选择文件名以 **`-RG34XX.zip`** 结尾的附件。
 
 **只想玩游戏，不需要下载** `source.tar.gz`、`third-party-sources.tar.gz`、`Source code (zip)` 或 `Source code (tar.gz)`。它们是给开发者看的源码。`SHA256SUMS` 是可选的下载校验文件。
 
@@ -125,7 +125,7 @@ SD 卡根目录/
 | 十字键 | 行走、选择菜单和目标；相邻方向一起按可以斜走 |
 | A | 确定、互动、捡脚下的物品，附近有怪也能捡 |
 | 短按 B | 查看目标；菜单中返回，选目标时取消 |
-| 长按 B 至少半秒后松开 | 搜索周围，**会消耗回合**；只在正常探索时生效 |
+| 长按 B 满 0.55 秒立即触发 | 搜索周围，**会消耗回合**；只在正常探索时生效 |
 | X | 打开背包 |
 | Y / 长按 Y | 使用当前快捷格 / 更换或清空当前快捷格 |
 | L1 / R1 | 向左 / 向右切换快捷格；弹窗里切换标签页 |
@@ -134,6 +134,8 @@ SD 卡根目录/
 | Start | 暂停菜单、设置、日志与图鉴、搜索周围等 |
 | Menu | 等待一回合 |
 | Select＋Start | **保存退出游戏** |
+
+长按 B 搜索、长按 Select 地图均在按住满 0.55 秒时立即触发一次；松开不会再执行短按动作。
 
 地图只显示已知区域，不会揭开未探索的房间。查看目标不耗回合，搜索会耗回合。角色升级不会自动加力量，力量通常通过喝力量药剂提升。
 

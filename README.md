@@ -2,7 +2,7 @@
 
 **中文玩家从这里开始：[中文安装与上手教程](docs/INSTALL-ZH.md)** — 下载哪个文件、放到 SD 卡哪里、如何启动和更新，按步骤照做即可。
 
-**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.1/Shattered-Pixel-Dungeon-v4.0.2-nextui.1-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
+**[直接下载 RG34XX 游戏安装包](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/download/v4.0.2-nextui.2/Shattered-Pixel-Dungeon-v4.0.2-nextui.2-RG34XX.zip)** · [最新 Release](https://github.com/Drafffffff/shattered-pixel-dungeon-nextui/releases/latest)
 
 Unofficial, open-source RG34XX adaptation of Shattered Pixel Dungeon **4.0.2**. Designed for the ordinary RG34XX: H700, 720×480, 1 GB RAM, D-pad and buttons, no analog sticks. 简体中文默认开启。
 
@@ -34,7 +34,7 @@ Save and exit, back up `.userdata/shared/shattered-rg34xx/`, and install the new
 | D-pad | Move; navigate menus, inventory and target tiles. Adjacent directions together move diagonally. |
 | A | Confirm/interact; pick up underfoot even near enemies; confirm selected target. |
 | B (short) | Inspect target, equivalent to PC E; back in windows; cancel targeting. |
-| B (hold ≥0.55 s, then release) | **Search surroundings** while exploring; consumes a turn. Start → Search is an alternative. |
+| B (hold ≥0.55 s) | **Search surroundings** while exploring; consumes a turn. Start → Search is an alternative. |
 | X | Inventory; character keyboard when editing text. |
 | Y | Use selected quickslot; hold to replace/clear it. In inventory, assign item to a slot. A/Y both confirm targeting. |
 | L1 / R1 | Previous/next quickslot in actual screen order; switch tabs/targets where applicable. |
@@ -47,6 +47,8 @@ Save and exit, back up `.userdata/shared/shattered-rg34xx/`, and install the new
 | Volume | System volume with numeric overlay (0–20). |
 | Menu + Volume | Brightness with numeric overlay (0–10); no wait action. |
 | Select + Volume | Color temperature (0–40); no hero window. |
+
+**Hold B and hold Select trigger once as soon as 0.55 s is reached; releasing does not trigger another action.**
 
 **B gestures apply only during exploration.** In a window, target selection, or map, B cancels immediately; holding it does not search. Search is distinct from inspecting yourself, which shows hero information.
 
@@ -74,13 +76,15 @@ For SSH installation after building, with the game saved and exited:
 
 Installer stages a new program directory, keeps the previous version at `.ports/shattered-rg34xx.previous`, preserves saves and artwork, and removes the obsolete duplicate launcher. It never stops NextUI. Do not send signals to `nextui.elf`: on this device that can shut the machine down.
 
-For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.1` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
+For a release from a clean committed public checkout, run `python3 ports/shattered-rg34xx/package-release.py v4.0.2-nextui.2` after building. This verifies and downloads corresponding dependency sources, packages the SD-card zip, archives the committed source, and writes SHA256SUMS under `build/shattered-rg34xx/release/`.
 
 ## Rendering, memory and verification
 
 SDL2 Mali backend creates a GLES2 context directly; no Weston/X11 or mouse emulation. Raw H700 evdev mapping matches NextUI (A=304, B=305, X=307, Y=306). The bridge preserves JVM signal handlers across SDL initialization. The launcher clears inherited PortMaster SDL interposers.
 
 Default Chinese, compact landscape UI, 3× scaling (240×160 logical canvas); Chinese glyphs are generated on demand. Frame cap 30 fps, Java heap 32–192 MiB, direct buffers capped at 64 MiB, SerialGC. Heap limits are not total process memory limits.
+
+On 2026-10-12, the 4.0.2 build entered a new dungeon on RG34XX with short log samples of **29–30 fps and about 160–162 MiB RSS**; the user confirmed the screen and basic controls worked. This is a short startup/gameplay check, not long-session validation.
 
 The previous 3.3.8 adaptation measured around **29–30 fps and 149–181 MiB RSS** on representative RG34XX dungeon gameplay. These numbers are a historical baseline, not measurements of this 4.0.2 release. These samples do not establish worst-case memory or long-session stability for every class, effect or audio path. Other handhelds and firmware are unverified. Text entry supports a D-pad Latin/digit keyboard; Chinese display is supported, but Pinyin input is not included.
 
